@@ -1,0 +1,18 @@
+#!/bin/bash
+#PBS -N chym_test
+#PBS -l walltime=12:00:00
+#PBS -q esp
+#PBS -l nodes=1:ppn=12
+#PBS -m abe
+#PBS -M fdi_sant@ictp.it
+#PBS -o /path_to_chym-esp/chym-esp/output/PBS.out
+#PBS -e /path_to_chym-esp/chym-esp/output/PBS.err
+
+
+# load required modules
+. /etc/profile.d/modules.sh
+module purge
+module load esmf
+
+cd /path_to_chym-esp/chym-esp/
+mpirun -np 12 ./main/chym ./doc/namelist_Po.in > ./output/simulation.out 2> ./output/simulation.err

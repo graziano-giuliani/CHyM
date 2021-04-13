@@ -1,0 +1,107 @@
+!::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+!
+!    Namelist details for ICTP CHyM.
+!
+!::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+&chymconfig
+  nlon = 330,                !-->Number of longitudes points (Integer)
+  nlat = 280,                !-->Number of latitudes points (Integer)
+  slon = 6.50 ,              !-->First value of longitude for the selected domain (Real)
+  slat = 44.10 ,             !-->First value of latitude for the selected domain (Real)
+  dij = 0.009 ,              !-->Spatial resolution in degree (Real)
+  chym_radius = 30.,         !-->Radius of inluence (km) to be used for CA based interpolation of sparse precipitation data
+  nsave = 1,                 !-->Every how many hourly time steps Dynamical fields are saved in the output file
+  demf = 3,                  !-->DEM source: 1 means Italy DEM
+                             !-->            2 means world DEM (1 Km of resolution)
+                             !-->            3 means both (Italy DEM and world DEM 1 km)
+                             !-->            4 means NASA World DEM (90 meters of resolution)
+                             !-->            7 means ASTER World DEM (30 meters of resolution) NB: Not available in MUSEO for all the Globe
+                             !-->            9 means Hydrosheeds World DEM (90 meters of resolution) NB: Not available in MUSEO for all the Globe
+                             !-->            10 means Hydrosheeds World DEM and DIR map (1 Km of resolution) 
+  chym_sdate = 2008100100,   !-->Start date of this run in the format YYYYMMDDHH (Integer)
+  chym_edate = 2008111101,   !-->End date of this run in the format YYYYMMDDHH (Integer)
+  chym_steps = 50,           !-->Specifies the number of time integration steps per hour to be used for the solution of the
+                             !-->prognostic continuity equation
+  chym_tempfl = 1,           !-->            1 means monthly average temperature from global ERA data are used
+                             !-->            2 Daily average temperatures as simulated by MM5 meteorological model are used, the data set only covers the Italy and the surrounding zone.
+                             !-->            3 Hourly average temperatures as simulated by MM5 meteorological model are used, the data set only covers the Italy and the surrounding zone.
+                             !-->            4 means temperatures are read from RegCM output
+                             !-->            5 Temperature fields are rebuilt from MuSEO sparse data base at hourly time step.
+                             !-->            6 Temperature fields are rebuilt from ERAinterim at 3 hourlytime step.
+                             !-->            7 Temperature fields are rebuilt from ERA5 at hourly time step.
+                             !-->            10 Temperature fields are rebuilt from data stations (it needs to be implemented yet)
+  chym_restart = 0,          !-->            0 means that CHyM have to start a new simulation
+                             !-->            1 means that CHyM have to continue a previous run (chym_rfile as to be defined accordingly)
+  chym_modis = 0,           !--> 0 means no snow cover mask is builded
+  	                     !--> 1 If this flag is set to 1 the MODIS MuSEO database is used to build the snow cover mask, data are available since 2012
+  	                     !--> 21 If this flag is set to 21 the ACQWA modis database is used to build the snow cover mask,
+                             !    in this case the same flag is changed to the the value -21 by the routine acqwamodis if 
+                             !    the data are not available (before January 23, 2000 and after December 31, 2009).
+!  chym_ice = 0,             !--> 0 No ice mask is applied 
+!                            !--> 1 Ice mask is read from file
+  chym_ofile = 'output/Po_test' ,                  !--> A string specifying the file where CHyM model will store the results of simulation
+  chym_sfile = 'output/Po_test.static_fields.nc',       !--> A string specifying the file where CHyM model will read the static fields builded in the preproc
+  chym_rfile = 'output/Po_test_2002010100_rst.nc',      !--> A string specifying the file where CHyM model will read the restart fields if chym_restart = 1
+  chym_manning = 'doc/manning.coeff',              !--> A string specifying the file where CHyM model will read the manning coefficienties
+  chym_dsource = 'intdb,museo',                           !--> This parameter allows to specify the source(s) to be used to rebuild the precipitation field on
+                                                   !--> the CHyM grid; it must contains a comma separeted list of any combination of the following words:
+				                   !-->              "persiann" - Persiann 0.25 deg database must be used
+                                                   !-->              "trmm"     - TRIMM database must be used
+                                                   !-->              "ein75"    - ERA interim 0.75 deg resolution database must be used
+                                                   !-->              "era5"     - ERA5 0.25 deg resolution database must be used
+                                                   !-->              "regcm"    - RegCM output file must be used
+                                                   !-->              "txt"      - Reaingauges from txt file must be used (see example file inside doc directory)
+  chym_ifile1 = 'standard',                        !--> A string specifying the RegCM output file that CHyM will use to retrieve the precipitation fields
+  chym_ifile2 = '',
+  chym_regcm_rad = -1.,                            !-->  -1.  means Nearest Neighbour interpolation of RegCM grid over CHyM grid
+                                                   !-->   0.  means Calculates the radius for Cressmann interpolation using ceiling((regcm_res/2.)*sqrt(2.)/1000.)
+                                                   !-->  > 0  means Use the specified value for Cressman int (example. if you have a 12km spatial resolution
+                                                   !-->              in RegCM you can put a value around 10)
+  chem_symtype = 'Exercise with CHyM Po' ,
+  chym_savefld = 'sno,h2o,gwt,dgw,ara,por,rai,evp,tem',
+  chym_mfile = 'acqwapo'
+!
+! PreProcessing parameters
+!
+  angiocycle = 1,
+  ncyc1 = 100,                                     !--> Number of DEM Smoothing cycles by CA algorithm
+  ncyc2 = 1000,                                    !--> Number of DEM Smoothing cycles by filling algorithm
+  ncyc3 = 21,                                      !--> Number of cycles for CA Algorithm Correction
+  angionp = 40,
+!
+! PreProcessing parameters (ONLY for demf=10)
+!
+  threshdr  = 100,
+  numrivdr  = 500,
+  numrunave = 3,
+  uphill    = 50,
+!
+! Calibration parameters
+!
+  cpar1=4.8e-07,      !--> Return flow factor (4.8e-07)
+                      !--> Must be proportional to the resolution (increase dij -> reduce cpar1)
+                      !--> i.e. 4.8e-07 for 0.009 degree ; 1.2e-07 for 0.035 degree (4.8*0.9/dij)  
+  cpar2=0.0015,       !--> Alpha coefficients for hydraulic radius (0.0015)
+  cpar3=0.050,        !--> Beta coefficients for hydraulic radius (0.050)
+  cpar4=0.050,        !--> Melting temperature factor (0.050)
+  cpar5=0.0094,       !--> Melting shortwave rad. factor (0.0094)
+  cpar6=100.0,        !--> River/land threshold (Km2) (500.0)
+  cpar7=90.0,         !--> Number of days to consider for return flow (90)
+  cpar8=4.5,          !--> Reduction of land/channel manning coefficient
+  cpar9=200.0,        !--> River/land threshold (Km2) for returnflow
+  cpar10=0.0,         !--> Not yet used
+
+  infiltr=40.0,
+  infi_lago=0.0,
+  infi_fiume=0.0,
+  infi_ice=0.0,
+!
+! Netcdf output compression parameters
+!
+  deflate_level=0,
+  num_chunky = 5,
+  num_chunkx = 5,
+
+  packnetcdf = 0,
+/
