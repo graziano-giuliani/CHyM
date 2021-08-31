@@ -47,7 +47,7 @@ module mod_crtstatic
     if ( mchym(13)==10 ) then 
        call worlddem
        call italydem
-       call hydrodem_gen
+!       call hydrodem_gen
 !       call hydrodem_1k
 !       call chkdemhole(dem)
 !       call areamatrix

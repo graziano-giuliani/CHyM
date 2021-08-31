@@ -57,9 +57,11 @@ call mpi_comm_rank(mycomm, myid, mpierr)
 !
     call writestatus('Creating static fields.')
     if (mchym(13)==10) then
-      call buildhyddirmap
+!      call buildhyddirmap
+      call hydrodem_1k
+    else
+      call builddem                      ! Fill DEM matrix
     end if
-    call builddem                      ! Fill DEM matrix
     call buildlandusemap               ! Fill landuse matrix
     if (.not.mchym(13)==10) then 
       call buildflowdirmap(.True.)               ! Fill fmap and smooth dem matrix
