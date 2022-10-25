@@ -169,6 +169,7 @@ AM_CONDITIONAL(COMPILER_G95, [ test x"$FC" = xg95 ] )
 AM_CONDITIONAL(COMPILER_SUN, [ test x"$FC" = xsunf95 ] )
 AM_CONDITIONAL(COMPILER_PGI, [ test x"$FC" = xpgf95  ] )
 AM_CONDITIONAL(COMPILER_INTEL, [ test x"$FC" = xifort -o \
+                                      x"$FC" = xifx -o \
                                       x"$FC" = ximpif90 ])
 AM_CONDITIONAL(CHYM_PARALLEL, [ test x"$PARALLEL" = "x1"])
 

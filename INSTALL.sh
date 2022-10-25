@@ -22,6 +22,11 @@
 
 autoreconf -f -i
 
-./configure
+#./configure
+
+## On G100 use IntelOneAPI ##
+## module load intel-oneapi-compilers
+## module load netcdf-fortran/4.5.3--intel-oneapi-mpi--2021.4.0--intel--2021.4.0
+## ./configure CC=icx FC=ifx 
 
 make
