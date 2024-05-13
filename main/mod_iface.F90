@@ -17,7 +17,7 @@
 !
 !::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     module mod_iface
-    
+
     use mod_internal
     use mod_runparams
     use mod_param
@@ -89,7 +89,7 @@
         call writestatus('Reading static fields.')
         allocate(port1d(nngbp),bwet1d(nngbp),h2o1d(nngbp))
         port1d=0.
-        bwet1d=0. 
+        bwet1d=0.
         h2o1d=0.
       end if
       call mpi_gather(iyp,1,mpi_integer,                          &
@@ -125,12 +125,12 @@
       allocate(h2osub1d_n(iyp*jxp))
       allocate(port1d_n(jx*iy))
       allocate(h2o1d_n(jx*iy))
-      h2osub1d=0. 
-      portsub1d=0. 
-      bwetsub1d=0. 
-      portsub1d_n=0. 
-      h2osub1d_n=0. 
-      port1d_n=0. 
+      h2osub1d=0.
+      portsub1d=0.
+      bwetsub1d=0.
+      portsub1d_n=0.
+      h2osub1d_n=0.
+      port1d_n=0.
       h2o1d_n=0.
       call read_restart_stat_NC
       call mpi_bcast(mchym(9),1,MPI_integer, 0,mycomm,mpierr)
@@ -150,7 +150,7 @@
          end do
       end if
       if (mchym(9).eq.1) then
-        if (myid == 0) then 
+        if (myid == 0) then
           call read_restart_dyn_NC
 !        call mpi_barrier(comm,ierr)
           displacem = 0
@@ -206,10 +206,16 @@
       real :: ti4, tf4, tot4
       real, dimension(nlon,nlat) :: runrai
       integer :: i,j,k,iv,displacem
+      tot1 = 0.0
+      tot2 = 0.0
+      tot3 = 0.0
+      tot4 = 0.0
+      tiorai = 0.0
+      tiorun = 0.0
       if (myid == 0) then
         write (6,'(/12x,a)') 'Start of integration. Hereafter output is'// &
                  ' sent to chymlog file'
-        call getlun(logfile) 
+        call getlun(logfile)
         call mvsetflags('CHyM log unit',float(logfile))
         call calibration
         open(logfile,file='chymlog',status='unknown')
@@ -277,7 +283,7 @@
             call writeoutfile(1)
             call snowacc
             call evapotranspiration
-            call melting    
+            call melting
             CALL CPU_TIME(tf2)
             tot2 = tot2 + tf2 - ti2
             CALL CPU_TIME(ti3)
@@ -301,7 +307,7 @@
           if (myid==0)then
             CALL CPU_TIME(trunini)
           end if
-!          if (avgarai == 0) then 
+!          if (avgarai == 0) then
 !            runrai = 0
 !          else
 !            runrai = avgarai/nsave
@@ -319,7 +325,7 @@
               mpi_real,h2osub1d,iypgb*jxpgb, mpi_real, 0, cartesian_communicator, mpierr)
 !              mpi_real,h2osub1d,iypgb*jxpgb, mpi_real, 0, mycomm, mpierr)
           call myunpack_real_grid(h2osub1d,h2osub,ide1gb,ide2gb,jde1gb,jde2gb)
-          
+
           call runoff(rain)
           if (myid==0)then
             CALL CPU_TIME(trunfin)

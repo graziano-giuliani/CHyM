@@ -23,7 +23,7 @@ module mod_chymlib
   use mod_runparams
   use mod_museo
   use mod_phys
- 
+
   contains
 
   subroutine plotriverbasin
@@ -34,7 +34,9 @@ module mod_chymlib
     real, dimension(nlon,nlat) :: wk2, work
     real :: cut
     integer :: iriver
+    return
     iriver = mchym(18)
+    if ( iriver == 0 ) iriver = 2
     okplot=.true.
     cut=rchym(6)/20.0
     call chymmouthsfinder(drai,luse,fmap,nlon,nlat,cut,nsec,isec,jsec)
@@ -50,17 +52,17 @@ module mod_chymlib
     end do
   end subroutine plotriverbasin
 
-  subroutine chymmouthsfinder(w,luse,fmap,nlon,nlat,cut,nsec,isec,jsec)   
+  subroutine chymmouthsfinder(w,luse,fmap,nlon,nlat,cut,nsec,isec,jsec)
     implicit none
     integer mare,lago,fiume ; parameter (mare=15,lago=14)
-    integer nlon,nlat,nsec,isec(1),jsec(1)
+    integer nlon,nlat,nsec,isec(:),jsec(:)
     real w(nlon,nlat),cut
     integer luse(nlon,nlat),fmap(nlon,nlat)
     integer i,j,idir,ir(9),jr(9) ; save ir,jr
     data ir /-1, 0, 1, 1, 1, 0,-1,-1,0/
     data jr / 1, 1, 1, 0,-1,-1,-1, 0,0/
     nsec=0
-    do j=nlat-1,2,-1 
+    do j=nlat-1,2,-1
       do i=2,nlon-1
         idir=fmap(i,j)
         if (idir.ge.1.and.idir.le.8) then
@@ -75,8 +77,8 @@ module mod_chymlib
              jsec(nsec)=j+jr(idir)
           endif
         endif
-      end do 
-    end do                   
+      end do
+    end do
     return
   end subroutine chymmouthsfinder
 
@@ -169,7 +171,7 @@ module mod_chymlib
     do j = 2 , nlat - 1
       do i = 2 , nlon - 1
         if ( flg==-1 ) then
-          if ( drai(i,j) > 80. ) then 
+          if ( drai(i,j) > 80. ) then
 !             wk1(i,j)=-5
           end if
         end if
@@ -189,7 +191,7 @@ module mod_chymlib
                 wk1(i,j) = dem(i,j)
               else if ( flg==-1 ) then
                 wk1(i,j) = -999
-              else 
+              else
                 wk1(i,j) = flg
 !                if (drai(i,j) > 80.) wk1(i,j)=-5
               end if
@@ -338,7 +340,7 @@ module mod_chymlib
     implicit none
     integer :: idir,iii,ii,jj,j,k,numpoints,run,counter
     integer :: iimaxs,jjmaxs,iimax,jjmax
-    real    :: maxdra,maxsubdra,demmin,increment 
+    real    :: maxdra,maxsubdra,demmin,increment
     real, dimension(10000000) :: demval,demval_run,demval_int
     integer, dimension(10000000) :: iriv, jriv
     real, dimension(nlon,nlat) :: drai_t
@@ -462,7 +464,7 @@ module mod_chymlib
           do k = 1 , 3
           if(luse(is,js).ne.mare.and. &
             luse(is,js).ne.lago.and. &
-            fmap(is,js).ne.0) then          
+            fmap(is,js).ne.0) then
               demsum = demsum + dem(is,js)
               numpoints = numpoints+1
               idir = fmap(is,js)

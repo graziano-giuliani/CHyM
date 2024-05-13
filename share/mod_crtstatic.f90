@@ -39,12 +39,14 @@ module mod_crtstatic
     implicit none
     dem = -1.0
     write (6,'(/12x,a)') 'Builting Digital Elevation model from MuSEO db.'
+    mchym(13) = 20
     if ( mchym(13)==2 .or. mchym(13)==3 .or. mchym(13)>=21 ) call worlddem
     if ( mchym(13)==1 .or. mchym(13)==3 ) call italydem
     if ( mchym(13)==4 ) call nasadem
     if ( mchym(13)==7 ) call asterdem
     if ( mchym(13)==9 ) call hydrodem
-    if ( mchym(13)==10 ) then 
+    if ( mchym(13)==20 ) call readmydem
+    if ( mchym(13)==10 ) then
        call worlddem
        call italydem
 !       call hydrodem_gen
@@ -60,7 +62,7 @@ module mod_crtstatic
 !       call plotriverbasin
     end if
 !    if ( mchym(13)==21 ) call rhonebasin
-!    if ( mchym(13)/=10 ) then 
+!    if ( mchym(13)/=10 ) then
        call chkdemhole(dem)
 !    end if
     write (6,'(12x,a)') 'Done.'
@@ -329,7 +331,7 @@ module mod_crtstatic
     character(len=150) :: lfile
     character(len=100) :: dir
     character(len=4) :: sn, ew, lats, lons
-    real :: xlat,xlon 
+    real :: xlat,xlon
     integer :: lat,lon
     lat=nint(abs(xlat)) ; lon=nint(abs(xlon))
     if (lat.gt.90.or.lon.gt.180) then
@@ -400,7 +402,7 @@ module mod_crtstatic
     write (cfile,'(i10,a)') np , ' points used to fill CHYM matrix'
     call noinspace(cfile)
     write (6,'(21x,a)') trim(cfile)
-  end subroutine readtiles 
+  end subroutine readtiles
 
   subroutine hydrodem_gen
     implicit none
@@ -413,7 +415,7 @@ module mod_crtstatic
     print*,"we are going to read the direction matrix from file"
     cfile = "output/SAMCORDEXWORLD_006degree_stkSA_CORDEXWORLD_DEM_0.06degree_fdm.nc"
 !    call gethydrodata_int(cfile, nlond, nlatd,dir,lond,latd,ifound)
-    
+
 !    print*,"dir matrix read",maxval(dir),minval(dir)
     ii = 1 ; jj = 1
 !    print*,"int((rchym(1)-rchym(1))/rchym(5))+1", int((rchym(1)-rchym(1))/rchym(5))+1
@@ -456,21 +458,21 @@ module mod_crtstatic
     integer :: ii, jj, i, j, nlond , nlatd, ifound
     real :: minlon,maxlon,minlat,maxlat
     if (rchym(1) < -32.00417 .and. rchym(1) > -144.9958  .and.                 &
-        rchym(3) < -32.00417 .and. rchym(3) > -144.9958  .and.                 & 
+        rchym(3) < -32.00417 .and. rchym(3) > -144.9958  .and.                 &
         rchym(2) <  59.99583 .and. rchym(2) >  -55.99583 .and.                 &
         rchym(4) <  59.99583 .and. rchym(4) >  -55.99583 ) then
       write (6,'(15x,a)') 'America HydroSHEDS (1KM) DEM and DIR will be used.'
       nfile = "ca_na_sa.nc"
       minlon=-144.9958 ;maxlon=-32.00417 ;minlat=-55.99583 ;maxlat=59.99583
     elseif ( rchym(1) < 179.9958  .and. rchym(1) > 112.0042  .and.             &
-             rchym(3) < 179.9958  .and. rchym(3) > 112.0042  .and.             & 
+             rchym(3) < 179.9958  .and. rchym(3) > 112.0042  .and.             &
              rchym(2) < -10.00417 .and. rchym(2) > -55.99583 .and.             &
              rchym(4) < -10.00417 .and. rchym(4) > -55.99583 ) then
       write (6,'(15x,a)') 'Australia HydroSHEDS (1KM) DEM and DIR will be used.'
       nfile = "au.nc"
       minlon=112.0042 ;maxlon=179.9958 ;minlat=-55.99583 ;maxlat=-10.00417
     elseif ( rchym(1) < 179.9958  .and. rchym(1) > -18.99583  .and.             &
-             rchym(3) < 179.9958  .and. rchym(3) > -18.99583  .and.             & 
+             rchym(3) < 179.9958  .and. rchym(3) > -18.99583  .and.             &
              rchym(2) <  59.99583 .and. rchym(2) > -34.99583  .and.             &
              rchym(4) <  59.99583 .and. rchym(4) > -34.99583 ) then
       write (6,'(15x,a)') 'EurAfrAsia HydroSHEDS (1KM) DEM and DIR will be used.'
@@ -478,13 +480,13 @@ module mod_crtstatic
       minlon=-18.99583 ;maxlon=179.9958 ;minlat=-34.99583 ;maxlat=59.99583
     else
       write (6,'(15x,a)') 'The domain limits are outside the HydroSHEDS domain '
-      write (6,'(15x,a)') 'availability, please use a different DEM or keep the ' 
+      write (6,'(15x,a)') 'availability, please use a different DEM or keep the '
       write (6,'(15x,a)') 'domain boundaries among the following limits: '
       write (6,'(15x,a)') 'Eurasia and Africa (minlon=-18.99583 ;maxlon=179.9958 ;minlat=-34.99583 ;maxlat=59.99583)'
       write (6,'(15x,a)') 'America (minlon=-144.9958 ;maxlon=-32.00417 ;minlat=-55.99583 ;maxlat=59.99583)'
       write (6,'(15x,a)') 'Australia and NewZeland (minlon=112.0042 ;maxlon=179.9958 ;minlat=-55.99583 ;maxlat=-10.00417)'
       call exit(1)
-    end if 
+    end if
     cfile = "museo/DEM/HydroSHEDS_30s/"//nfile
     ii = 1
     jj = 1
@@ -539,6 +541,64 @@ module mod_crtstatic
       end do
       fmap = fmap1
   end subroutine hydrodem_1k
+
+  subroutine readmydem
+    use netcdf
+    implicit none
+    integer :: ncid , ivarid , istatus
+    character(len=132) :: cfile
+    cfile = 'mydem.nc'
+    write(6,'(21x,a)') 'Reading '//cfile(1:len_trim(cfile))
+    istatus = nf90_open(cfile,nf90_nowrite,ncid)
+    if (istatus /= nf90_noerr) then
+       write(6,'(/,14x,a,a,a,a)')  'File '//trim(cfile)//' not found'
+       stop
+    end if
+    istatus = nf90_inq_varid(ncid,'dem',ivarid)
+    if (istatus /= nf90_noerr) then
+       write(6,'(/,14x,a,a,a,a)')  'variable dem not found in file'
+       stop
+    end if
+    istatus = nf90_get_var(ncid,ivarid,dem)
+    if (istatus /= nf90_noerr) then
+       write(6,'(/,14x,a,a,a,a)')  'cannot read variable dem from file'
+       stop
+    end if
+    istatus = nf90_close(ncid)
+    if (istatus /= nf90_noerr) then
+       write(6,'(/,14x,a,a,a,a)')  'cannot correctly close file '//trim(cfile)
+       stop
+    end if
+  end subroutine readmydem
+
+  subroutine readmylnd
+    use netcdf
+    implicit none
+    integer :: ncid , ivarid , istatus
+    character(len=132) :: cfile
+    cfile = 'mylnd.nc'
+    write(6,'(21x,a)') 'Reading '//cfile(1:len_trim(cfile))
+    istatus = nf90_open(cfile,nf90_nowrite,ncid)
+    if (istatus /= nf90_noerr) then
+       write(6,'(/,14x,a,a,a,a)')  'File '//trim(cfile)//' not found'
+       stop
+    end if
+    istatus = nf90_inq_varid(ncid,'luc',ivarid)
+    if (istatus /= nf90_noerr) then
+       write(6,'(/,14x,a,a,a,a)')  'variable luc not found in file'
+       stop
+    end if
+    istatus = nf90_get_var(ncid,ivarid,luse)
+    if (istatus /= nf90_noerr) then
+       write(6,'(/,14x,a,a,a,a)')  'cannot read variable luc from file'
+       stop
+    end if
+    istatus = nf90_close(ncid)
+    if (istatus /= nf90_noerr) then
+       write(6,'(/,14x,a,a,a,a)')  'cannot correctly close file '//trim(cfile)
+       stop
+    end if
+  end subroutine readmylnd
 
   subroutine hydrodem
     implicit none
@@ -749,37 +809,42 @@ module mod_crtstatic
     real :: cost , ylat , ylon
     character(len=70) :: cfile
     integer :: i , irec , irec1 , irec2 , j , lun , n , ncic , nzero
-    write (6,'(/12x,a)') 'Building Land Use Map using USGS data.'
-    do j = 1 , nlat
-      do i = 1 , nlon
-        luse(i,j) = 0
-      end do
-    end do
-    cost = 1./120.
-    irec1 = nint(1.0+(90.0-rchym(4))/cost) - 4
-    irec2 = nint(1.0+(90.0-rchym(2))/cost) + 4
-    call getlun(lun)
-  ! call openmuseofiles(lun,'bats2_0.marco',0)
-    call openmuseofiles(lun,'oge2_0.marco',0)
-    do irec = 1 , irec1 - 1
-      read (lun)
-    end do
-    do irec = irec1 , irec2
-      read (lun) ivals
-      ylat = 90.0 - (irec-1)*cost - 3*cost                     ! correzione
-      j = nint((ylat-rchym(2))/rchym(5)) + 1
-      if ( j>=1 .and. j<=nlat ) then
-        call correctusgs(ivals,irec)
-        do n = 1 , ncols
-          ylon = -180.0 + (n-1)*cost
-          i = nint((ylon-rchym(1))/rchym(5)) + 1
-          if ( i>=1 .and. i<=nlon ) then
-            luse(i,j) = ivals(n)
-          end if
+    if ( demf == 20 ) then
+      write (6,'(/12x,a)') 'Reading pre-processed USGS data.'
+      call readmylnd( )
+    else
+      write (6,'(/12x,a)') 'Building Land Use Map using USGS data.'
+      do j = 1 , nlat
+        do i = 1 , nlon
+          luse(i,j) = 0
         end do
-      end if
-    end do
-    close (lun)
+      end do
+      cost = 1./120.
+      irec1 = nint(1.0+(90.0-rchym(4))/cost) - 4
+      irec2 = nint(1.0+(90.0-rchym(2))/cost) + 4
+      call getlun(lun)
+  !   call openmuseofiles(lun,'bats2_0.marco',0)
+      call openmuseofiles(lun,'oge2_0.marco',0)
+      do irec = 1 , irec1 - 1
+        read (lun)
+      end do
+      do irec = irec1 , irec2
+        read (lun) ivals
+        ylat = 90.0 - (irec-1)*cost - 3*cost                     ! correzione
+        j = nint((ylat-rchym(2))/rchym(5)) + 1
+        if ( j>=1 .and. j<=nlat ) then
+          call correctusgs(ivals,irec)
+          do n = 1 , ncols
+            ylon = -180.0 + (n-1)*cost
+            i = nint((ylon-rchym(1))/rchym(5)) + 1
+            if ( i>=1 .and. i<=nlon ) then
+              luse(i,j) = ivals(n)
+            end if
+          end do
+        end if
+      end do
+      close (lun)
+    end if
     ncic = 0
     nzero = 1
     do while ( nzero>0 .and. ncic<10 )
@@ -809,13 +874,25 @@ module mod_crtstatic
     call noinspace(cfile)
     call no2space(cfile)
     write (6,'(15x,a)') trim(cfile)
-    write (6,'(15x,a)') 'Correcting LandUse map using DEM model.'
-    if (mchym(13) /= 9) then
+    if ( demf == 20 ) then
+      write (6,'(15x,a)') 'Harmonizing LandUse map and DEM model together.'
       do j = 1 , nlat
         do i = 1 , nlon
-          if ( dem(i,j)<=0.00001 ) luse(i,j) = mare
+          if ( (luse(i,j) == mare .or. luse(i,j) == lago) .and. &
+               dem(i,j) > 0.0 ) dem(i,j) = -1.0
+          if ( (luse(i,j) /= mare .and. luse(i,j) /= lago) .and. &
+               dem(i,j) < 0.0 ) dem(i,j) = 1.0
         end do
       end do
+    else
+      write (6,'(15x,a)') 'Correcting LandUse map using DEM model.'
+      if (mchym(13) /= 9) then
+        do j = 1 , nlat
+          do i = 1 , nlon
+            if ( dem(i,j)<=0.00001 ) luse(i,j) = mare
+          end do
+        end do
+      end if
     end if
     write (6,'(12x,a)') 'Done.'
   end subroutine buildlandusemap
@@ -2119,7 +2196,7 @@ module mod_crtstatic
       nzero2 = noflowcounter(icl)
       call writeint(6,15,'No-flow points are now ',nzero2,' ')
     end if
-    if ( demf==1 ) then
+    if ( demf == 1 .or. demf == 20 ) then
       stitle = 'DEM Smooting Algorithm 1 (DSA1)'
     else
       dem = savedem
@@ -2246,7 +2323,7 @@ module mod_crtstatic
     thresh = 0.00030
     do i = 1 , nlon
       do j = 1 , nlat
-        if ( accl(i,j)>thresh .and. drai(i,j)>200.0 ) then 
+        if ( accl(i,j)>thresh .and. drai(i,j)>200.0 ) then
           ncor = ncor + 1
 !          accl(i,j)=thresh
         end if
@@ -2592,7 +2669,7 @@ module mod_crtstatic
       wk(:,:) = 0.0
       do j = 2 , nlat - 1
         do i = 2 , nlon - 1
-          
+
           idir = fmap(i,j)
           if ( idir>0 ) then
             wk(i+ir(idir),j+jr(idir)) = wk(i+ir(idir),j+jr(idir)) + water(i,j)
@@ -2662,7 +2739,7 @@ module mod_crtstatic
     integer :: i , j
     do i = 1 , nlon
       do j = 1 , nlat
-        if ( drai(i,j)>cpar(6) ) then 
+        if ( drai(i,j)>cpar(6) ) then
            if (luse(i,j)/=mare .and. mchym(13)/=10) luse(i,j) = fiume
            if ( mchym(13)==10 ) luse(i,j) = fiume
         end if
@@ -2677,7 +2754,7 @@ module mod_crtstatic
 
   subroutine runoffspeed
     implicit none
-    real :: alfamin , delta , xgamma , mann , tresh , vmax
+    real :: alfamin , alfamax , delta , xgamma , mann , tresh , vmax
     real :: enne , hrad
     integer :: i , idir , intstep , j , land
     !!!
@@ -2686,7 +2763,8 @@ module mod_crtstatic
     xgamma = 0.33
     delta = cpar(8)           ! Param. for land/channel flow
     tresh = cpar(6)
-    alfamin = 0.1           ! Minimum value of surface runoff speed
+    alfamin = 0.10         ! Minimum value of surface runoff speed
+    alfamax = 3.0          ! Maximum value of surface runoff speed
     do i = 2 , nlon - 1
       do j = 2 , nlat - 1
         idir = fmap(i,j)
@@ -2706,12 +2784,16 @@ module mod_crtstatic
             enne = mann/(1+(delta-1)*(1+(drai(i,j)-tresh)/tresh))
           end if
           hrad = cpar(2) + cpar(3)*((drai(i,j)*1.E00)**xgamma)
-          alfa(i,j) = ((hrad**0.6666*accl(i,j)**0.5)/(enne))
-          if ( alfa(i,j)<alfamin ) alfa(i,j) = alfamin
+          if ( enne > 1.0e-20 ) then
+            alfa(i,j) = ((hrad**0.6666*accl(i,j)**0.5)/(enne))
+            if ( alfa(i,j)<alfamin ) alfa(i,j) = alfamin
+          else
+            alfa(i,j) = alfamax
+          end if
         end if
       end do
     end do
- 
+
     vmax = 0.0
     do i = 1 , nlon
       do j = 1 , nlat
@@ -2722,7 +2804,7 @@ module mod_crtstatic
     if ( intstep<10 ) intstep = 10
 ! Following line is commented because algorithm does not work
 ! write(6,'(12x,a,i4)') 'Suggested number of steps/hour=',intstep
-    alfamin = 0.1
+    alfamin = 0.10
     do i = 1 , nlon
       do j = 1 , nlat
         if ( luse(i,j)==mare ) then
@@ -2749,7 +2831,7 @@ module mod_crtstatic
     implicit none
     integer savecen
     if ( mchym(13)/=10 )call plotriverbasin
-    call createfile(trim(schym(11))//'.static_fields.nc', -1) 
+    call createfile(trim(schym(11))//'.static_fields.nc', -1)
 !    call createfile(trim(schym(11))//'.static_fields.nc', &
 !      mchym,rchym,schym,-1)
     call mvgetiflags(57,savecen)

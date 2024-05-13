@@ -16,7 +16,7 @@
 !    along with ICTP CHyM.  If not, see <http://www.gnu.org/licenses/>.
 !
 !::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-program preproc      
+program preproc
 
 use mod_internal
 use mod_runparams
@@ -44,7 +44,7 @@ call mpi_comm_rank(mycomm, myid, mpierr)
         '  time: ',a,/)
 !
 !-----------------------------------------------------------------------
-!     Read configuration parameters 
+!     Read configuration parameters
 !-----------------------------------------------------------------------
 !
     call setparam
@@ -63,17 +63,18 @@ call mpi_comm_rank(mycomm, myid, mpierr)
       call builddem                      ! Fill DEM matrix
     end if
     call buildlandusemap               ! Fill landuse matrix
-    if (.not.mchym(13)==10) then 
+    if (.not.mchym(13)==10) then
       call buildflowdirmap(.True.)               ! Fill fmap and smooth dem matrix
     end if
     call areamatrix                    ! Fill drai and area matrix
     call buildacclivitymap             ! Fill accl matrix
-    if (.not.mchym(13)==10) then 
+    if (.not.mchym(13)==10) then
       call reconnectdem                  ! Further Check on dem & fmap
     end if
-    call riveronlanduse                ! Fill luse matrix with river code
+!!    call riveronlanduse                ! Fill luse matrix with river code
     call runoffspeed
 !!    call buildicemap                   ! Fill the ice matrix
     call write_stat_NC
 
+call mpi_finalize(mpierr)
 end program preproc

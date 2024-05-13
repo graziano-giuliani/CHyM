@@ -21,15 +21,15 @@ module mod_runparams
       real , parameter :: chym_version = 5.0
       character(len=50) , parameter :: &
         CHYMNAME = 'CHyM - CETEMPS Hydrological Model'
-  
-  
+
+
       integer :: nlon
       integer :: nlat
-  
+
       integer :: chym_sdate
       integer :: chym_edate
       integer :: chym_steps
-  
+
       integer :: chym_tempfl = 1
       integer :: chym_savet = 0
       integer :: chym_savep = 0
@@ -41,21 +41,21 @@ module mod_runparams
       integer :: chym_tplot = 1
       integer :: chym_iplot = 0
       integer :: chym_zoom = 0
-  
+
       logical :: chym_verbose = .false.
-  
+
       real :: slon
       real :: slat
       real :: dij
       real :: chym_radius = 10.5
       real :: chym_regcm_rad = -1.0
-  
+
       integer :: nsli = 10
       integer :: nsave = 1
       integer :: rsave = 12
       integer :: angiocycle = 1
-      integer :: demf = 2
-  
+      integer :: demf = 20
+
       character(len=256) :: chym_mfile = ' '
       character(len=256) :: chym_ofile = 'tmp/test1.chym'
       character(len=256) :: chym_sfile = 'tmp/test1.chym'
@@ -63,13 +63,13 @@ module mod_runparams
       character(len=256) :: chym_pfile = 'tmp/rainfall.chym'
       character(len=256) :: chym_tfile = 'tmp/temperature.chym'
       character(len=256) :: chym_manning = 'doc/manning.coeff'
-  
+
       character(len=256) :: chym_dsource = 'era'
       character(len=256) :: chym_ifile1 = ' '
       character(len=256) :: chym_ifile2 = ' '
       character(len=256) :: chem_symtype = 'Exercise with CHyM'
       character(len=256) :: chym_savefld = 'por,rai,evp,rsr,tem'
-  
+
       integer :: ilon1 = 1
       integer :: ilon2 = 150
       integer :: ilat1 = 1
@@ -103,5 +103,5 @@ module mod_runparams
       real ::  infi_lago=0.0
       real ::  infi_fiume=0.0
       real ::  infi_ice=0.0
-      
+
 end module mod_runparams

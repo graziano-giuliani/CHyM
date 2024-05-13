@@ -27,14 +27,14 @@ module mod_param
      use mod_mssg
      use mod_libmv
      use mod_mpimess
-     use mod_varandtypes 
+     use mod_varandtypes
 
      contains
 
    subroutine setparam
      implicit none
      integer :: i1,j1
-     if (myid==0) then 
+     if (myid==0) then
        call read_namelist
 !       namelist /chymconfig/ nlon , nlat , slon , slat , dij , chym_radius , &
 !               nsli , nsave , demf , angiocycle , chym_sdate , chym_steps ,  &
@@ -47,7 +47,7 @@ module mod_param
 !               integrflag , cpar1 , cpar2 , cpar3 , cpar4 , cpar5 , cpar6 ,  &
 !               cpar7 , cpar8 , cpar9 , cpar10 , infiltr , infi_lago ,        &
 !               infi_fiume , infi_ice , chym_manning
-! 
+!
 !       call getarg(1, namelistfile)
 !       call getlun(lun)
 !       open(lun,file=namelistfile,status='old',action='read',iostat=iretval)
@@ -103,9 +103,9 @@ module mod_param
               avgrsrm(nlon,nlat), avgport(nlon,nlat),avgbwet(nlon,nlat),  &
               avggh2o(nlon,nlat), avgevap(nlon,nlat), avgsnow(nlon,nlat) ,&
               avgarai(nlon,nlat), avgtemp(nlon,nlat), avgdeepw(nlon,nlat),&
-              avgddeepw(nlon,nlat),                                       & !rainiold15(nlon,nlat),rainiold75(nlon,nlat), 
+              avgddeepw(nlon,nlat),                                       & !rainiold15(nlon,nlat),rainiold75(nlon,nlat),
               seqx(nlon+nlat), seqy(nlon+nlat) ,   &
-              iriv(n4df) , jriv(n4df) , seqi(n4df) , seqj(n4df))                        
+              iriv(n4df) , jriv(n4df) , seqi(n4df) , seqj(n4df))
      i1 = nlon
      j1 = (nlat/nproc)+4
 
@@ -128,8 +128,10 @@ module mod_param
    subroutine acquirescriptpar
     implicit none
     logical :: chktemfl
-    integer :: i,ih,ii,j,n,nf,nsts,rainflag,ndyn,iunit,k
+    integer :: i,ih,ii,j,n,nf,nsts,ndyn,k
     integer , dimension(8) :: tvals
+    integer :: rainflag = 0
+    integer :: iunit = -1
     character(len=80) :: sstr1,nameluse
     character(len=8) :: chcentur
     integer :: test1
@@ -232,7 +234,7 @@ module mod_param
 !        nsts = nsts + 1
 !      end if
     end do
-    write (6,'(15x,a,i10)') 'Assuming operational run ending at ' , ienddate 
+    write (6,'(15x,a,i10)') 'Assuming operational run ending at ' , ienddate
 
     avr = 0.5*(distance(lat(1,1),lon(1,1),lat(2,1),lon(2,1))                     &
           +distance(lat(1,1),lon(1,1),lat(1,2),lon(1,2)))
@@ -286,7 +288,7 @@ module mod_param
     rchym(10) = chym_radius   ! Radius of influence for sparse data interpol.
     rchym(11) = chym_regcm_rad! Radius of influence for regcm data interpol.
 
-!    if (mchym(13) == 10) rchym(5) = 0.0083333 
+!    if (mchym(13) == 10) rchym(5) = 0.0083333
 
     schym(1) = sdata         ! Rain data sources
     schym(2) = chym_ifile1   ! Chym or MM5 file
@@ -376,7 +378,7 @@ module mod_param
        read (iunit,'(2x,i3,2x,f5.3,1x,a)',end=103) test1,manning(k),nameluse
 !       write(6,'(2x,i3,2x,f5.3,1x,a)'),test1,manning(k),nameluse
     enddo
-    end if   
+    end if
     call mpi_bcast(lon(1,1),nlon*nlat,MPI_REAL, 0,mycomm,mpierr)
     call mpi_bcast(lat(1,1),nlon*nlat,MPI_REAL, 0,mycomm,mpierr)
     call mpi_barrier(mycomm,mpierr)
@@ -512,7 +514,7 @@ module mod_param
     return
   end subroutine field2save
 
-  subroutine calibration  
+  subroutine calibration
     implicit none
 
 !    cpar( 1)=4e-07! Return flow factor (4.8e-07)
@@ -523,7 +525,7 @@ module mod_param
 !    cpar( 5)=0.0094 ! Melting shortwave rad. factor (0.0094)
 !    cpar( 6)=500.0  ! River/land threshold (Km2) (500.0)
 !    cpar( 7)=90.0   ! Number of days to consider for return flow (90)
-!    cpar( 8)=4.5    ! Reduction of land/channel manning coefficient 
+!    cpar( 8)=4.5    ! Reduction of land/channel manning coefficient
 !    cpar( 9)=200.0  ! River/land threshold (Km2) for returnflow
 !    cpar(10)=0.0    ! Not yet used
 !
@@ -536,7 +538,7 @@ module mod_param
     call basincalibration
     return
   end subroutine calibration
-    
+
   subroutine basincalibration
     implicit none
     integer len_trim
@@ -563,7 +565,7 @@ module mod_param
                chym_ofile , chym_sfile , chym_rfile , rsave ,                      &
                chym_pfile , chym_tfile , chym_dsource , chym_ifile1 ,              &
                chym_ifile2 , chym_regcm_rad , chem_symtype ,                       &
-               chym_savefld , chym_netcdf , angionp , threshdr , numrivdr ,        & 
+               chym_savefld , chym_netcdf , angionp , threshdr , numrivdr ,        &
                numrunave , uphill , ncyc1 , ncyc2 , ncyc3,                         &
                integrflag , cpar1 , cpar2 , cpar3 , cpar4 , cpar5 , cpar6 ,        &
                cpar7 , cpar8 , cpar9 , cpar10 , infiltr , infi_lago ,              &

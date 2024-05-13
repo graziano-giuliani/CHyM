@@ -133,7 +133,7 @@ contains
     integer(long) , allocatable , dimension(:,:) :: avgport_int
     if (flag.eq.0) then
        call integer2string(time,10,sstr1)
-       write (string,'(15x,a,i5,a)') 'CHyM integration step number ', &
+       write (string,'(15x,a,i8,a)') 'CHyM integration step number ', &
            hourstep,': '//sstr1(1:10)
        write (logfile,'(a)') string(1:len_trim(string))
        write (6,'(a)') string(1:len_trim(string))
@@ -174,7 +174,7 @@ contains
        if (j.eq.1) then
           avgport = avgport / mchym(14)
           if (mchym(20).gt.0) write(lun1) avgport
-          if (mchym(29) > 0) then 
+          if (mchym(29) > 0) then
             if (.not. allocated(avgport_int)) allocate(avgport_int(nlon,nlat))
             avgport_int = nint((avgport - add_offset_por)/scale_factor_por)
             call write_dynvar('por',avgport_int)
@@ -272,12 +272,12 @@ contains
 
   subroutine runoff(rainloc)
     implicit none
-    logical :: first 
-    data first /.true./ 
+    logical :: first
+    data first /.true./
     save first
     integer ::  i,j,idir,imax,imin,jmax,jmin,tmin,step
     integer,save ::  i1,i2,j1,j2
-    real dm,rainload,deltat 
+    real dm,rainload,deltat
     save deltat,step
     real, dimension(nlon,nlat) :: cum , rainloc
     real :: cumulo
@@ -361,11 +361,11 @@ contains
 
   subroutine runoff1(rainloc)
     implicit none
-    logical :: first 
-    data first /.true./ 
+    logical :: first
+    data first /.true./
     save first
     integer ::  i,j,idir,imin,step,jmin
-    real dm,rainload,deltat 
+    real dm,rainload,deltat
     save deltat,step
     real, dimension(nlon,nlat) :: cum , rainloc
     cum = 0
@@ -419,11 +419,11 @@ contains
 
   subroutine temperature
     implicit none
-    integer :: oldmonth,oldday 
+    integer :: oldmonth,oldday
     data oldmonth,oldday /-1,-1/
     save oldmonth,oldday
-    logical :: first 
-    data first /.true./ 
+    logical :: first
+    data first /.true./
     save first
     real :: dl
     character(len=20) :: str
@@ -586,7 +586,7 @@ contains
         else if (rchym(11) == 0.) then
           rad = ceiling(((regcm_res/2.)*sqrt(2.))/1000)*1000
         else if (rchym(11) ==-1.) then
-          !no radius NN interpolation 
+          !no radius NN interpolation
         end if
       end if
       if (rchym(11) == -1) then
@@ -681,7 +681,7 @@ contains
        endif
     enddo
     if (ngoo.gt.5) then
-       write (scst,'(i6,a,i6,a)') ngoo,' of ',n,' data inside domain'
+       write (scst,'(i8,a,i8,a)') ngoo,' of ',n,' data inside domain'
        call no2space(scst) ; call noinspace(scst)
        write (logfile,'(18x,a)') scst(1:len_trim(scst))
        avg=avg/ngoo
@@ -709,8 +709,8 @@ contains
         call cressman(xwk1,xwk2,xwk3,n,1,30.0,temp,lat,lon,nlon,nlat)
     endif
 !    if (useca) then
-      do i=1,ncacyc 
-        call d2cellcycle(temp,lca,wk,nlon,nlat,0.9) 
+      do i=1,ncacyc
+        call d2cellcycle(temp,lca,wk,nlon,nlat,0.9)
       enddo
 !    endif
   end subroutine temperaturefield
@@ -812,14 +812,14 @@ contains
 !  Poiche' si passa ca a d2cellcycle viene aggiornata tutta la mappa,
 !  anche nei punti distanti piu' di radius. conviene sempre?
     implicit none
-    integer :: idata 
+    integer :: idata
     integer, dimension(nlon,nlat) :: ca, canc
     integer :: ora,giorno,mese,anno,i,j,ic,index,n,ncacyc,ngreat,srccode,nin
     integer nls,len_trim,ngood
     character(len=40) :: data
     character(len=24) :: lsource
     character(len=132) :: scst
-    character(len=300) :: simname 
+    character(len=300) :: simname
     character(len=80) :: now,sstr1,sstr2
     real :: radius
     logical :: useca,piove
@@ -872,14 +872,14 @@ contains
       end if
       n = 0
       if ( idata==1 .or. idata==30) then
-        if (year < 2001 .and. first) then 
+        if (year < 2001 .and. first) then
           write (6,'(15x,a)') '>WARNING< The '//lsource //' dataset is avalaible only from 2001'
           first = .false.
         else if (year >=2001) then
           call hourlyrain(ora,giorno,mese,anno,pi,la,lo,n)
         end if
       else if ( idata==31 ) then
-        if (year < 2001 .and. first) then 
+        if (year < 2001 .and. first) then
           write (6,'(15x,a)') '>WARNING< The '//lsource //' dataset is avalaible only from 2001'
           first = .false.
         else if (year >=2001) then
@@ -918,7 +918,7 @@ contains
       lsource = 'RegCM'
       nls = len_trim(lsource)
       write (logfile,'(16x,a)') '> Using Rain Rate prediction by '//lsource
-      if ( trim(schym(2)) == 'AFR44-ERAI') then 
+      if ( trim(schym(2)) == 'AFR44-ERAI') then
          radius = 50.0
          simname = './museo/RegCM/AFR-44/ICTP/ECMWF-ERAINT/evaluation/r1i1p1/ICTP-RegCM4-3'// &
                    '/v4/day/pr/pr_AFR-44_ECMWF-ERAINT_evaluation_r1i1p1_ICTP-RegCM4-3_v4_day_'
@@ -950,19 +950,19 @@ contains
          radius = 50.0
          simname = './museo/RegCM/CAM-44/ICTP/MPI-M-MPI-ESM-MR/rcp85/r1i1p1/ICTP-RegCM4-3'// &
                    '/v4/day/pr/pr_CAM-44_MPI-M-MPI-ESM-MR_rcp85_r1i1p1_ICTP-RegCM4-3_v4_day_'
-      else if ( trim(schym(2)) == 'AFR44-MPI-his') then 
+      else if ( trim(schym(2)) == 'AFR44-MPI-his') then
          radius = 50.0
          simname = './museo/RegCM/AFR-44/ICTP/MPI-ESM-MR/historical/r1i1p1/ICTP-RegCM4-3'// &
-                   '/4.3-rc15/day/pr/pr_AFR-44_MPI-ESM-MR_historical_r1i1p1_ICTP-RegCM4-3_4.3-rc15_day_' 
-      else if ( trim(schym(2)) == 'AFR44-MPI-rcp85') then 
+                   '/4.3-rc15/day/pr/pr_AFR-44_MPI-ESM-MR_historical_r1i1p1_ICTP-RegCM4-3_4.3-rc15_day_'
+      else if ( trim(schym(2)) == 'AFR44-MPI-rcp85') then
          radius = 50.0
          simname = './museo/RegCM/AFR-44/ICTP/MPI-ESM-MR/rcp85/r1i1p1/ICTP-RegCM4-3'// &
                    '/4.3-rc15/day/pr/pr_AFR-44_MPI-ESM-MR_rcp85_r1i1p1_ICTP-RegCM4-3_4.3-rc15_day_'
-      else if ( trim(schym(2)) == 'AFR44-MPIMR-his') then 
+      else if ( trim(schym(2)) == 'AFR44-MPIMR-his') then
          radius = 50.0
          simname = './museo/RegCM/AFR-44/ICTP/MPI-M-MPI-ESM-MR/historical/r1i1p1/ICTP-RegCM4-3'// &
                    '/v4/day/pr/pr_AFR-44_MPI-M-MPI-ESM-MR_historical_r1i1p1_ICTP-RegCM4-3_v4_day_'
-      else if ( trim(schym(2)) == 'AFR44-MPIMR-rcp85') then 
+      else if ( trim(schym(2)) == 'AFR44-MPIMR-rcp85') then
          radius = 50.0
          simname = './museo/RegCM/AFR-44/ICTP/MPI-M-MPI-ESM-MR/rcp85/r1i1p1/ICTP-RegCM4-3'// &
                    '/v4/day/pr/pr_AFR-44_MPI-M-MPI-ESM-MR_rcp85_r1i1p1_ICTP-RegCM4-3_v4_day_'
@@ -973,7 +973,7 @@ contains
       else if ( trim(schym(2)) == 'CORDEX_EUR-44_HadGEM_rcp85_MARCONI') then
         simname =trim(schym(16))//'/ICTP/HadGEM/rcp85/r1i1p1/ICTP-RegCM4.6/v1/3hr/pr/' // &
                  'pr_EURO-CORDEX_HadGEM_rcp85_r1i1p1_ICTP-RegCM4.6_v1_3hr_'
-      else if ( trim(schym(2)) == 'standard') then 
+      else if ( trim(schym(2)) == 'standard') then
          simname = trim(schym(16))
       else if ( trim(schym(2)) == 'CORDEX' ) then
         anno2 = anno ; mese2 = mese + 1
@@ -986,9 +986,9 @@ contains
         simname = cname
       else
          write (6,'(15x,a)')'Bad flag for RegCM data. Please check chym_ifile1. Exiting...'
-         call exit(0) 
+         call exit(0)
       end if
-      if ( nreg1==0 ) then 
+      if ( nreg1==0 ) then
         call regcmgetdims(ora,giorno,mese,anno,nreg1,nreg2,simname)
         if (rchym(11) == -1) then
           if ( .not.allocated(lati) ) allocate(lati(nreg1,nreg2))
@@ -998,7 +998,7 @@ contains
           if ( .not.allocated(mapj) ) allocate(mapj(nlon,nlat))
         end if
       end if
-      
+
       call regcmreadnc(nreg1,nreg2,ora,giorno,mese,anno,1,pi,la,lo,n,simname)
       if ( trim(schym(2)) == 'standard' .or. trim(schym(2)(1:6)) == 'CORDEX') then
         if (rchym(11) > 0.) then
@@ -1006,7 +1006,7 @@ contains
         else if (rchym(11) == 0.) then
           radius = ceiling((regcm_res/2.)*sqrt(2.)/1000.)
         else if (rchym(11) ==-1.) then
-          !no radius NN interpolation 
+          !no radius NN interpolation
         else
           write (6,'(15x,a)')'Bad flag for RegCM int Radius. Please check chym_regcm_rad. Exiting...'
           call exit(1)
@@ -1090,12 +1090,12 @@ contains
       else
 !Fabio        pi(ic) = -2
       endif
-      
+
     end do
     if (ngreat.gt.1) piove=.true.
     write (scst,'(i6,a,i5,a,i5,a)') n,' data available, ',nin, &
          ' inside domain, ',ngood,' actually used.'
-    call noinspace(scst) 
+    call noinspace(scst)
     call no2space(scst)
     write (logfile,'(18x,a)') scst(1:len_trim(scst))
     if (ngood.lt.1) then
@@ -1111,7 +1111,7 @@ contains
 !    CALL CPU_TIME(tallinti)
     if ( idata == 7 ) then
       if (rchym(11) == -1) then
-        write (logfile,'(18x,a)') "Nearest Neighbour Interpolation method for RegCM precipitation applyed" 
+        write (logfile,'(18x,a)') "Nearest Neighbour Interpolation method for RegCM precipitation applyed"
         ! if ( first ) then
         !   minlat=minval(lati)
         !   minlon=minval(loni)
@@ -1120,7 +1120,7 @@ contains
         !     do i=1,nlon
         !       do ic = 1,n
         !       end do
-        !            
+        !
         !       mapi(i,j) = ii
         !       mapj(i,j) = jj
         !       !distaic = 100000000
@@ -1149,7 +1149,7 @@ contains
         do ii = 1, nlat
           do jj = 1, nlon
             call closest2d(lati,loni,lat(jj,ii),lon(jj,ii),nreg1,nreg2,mapi(jj,ii),mapj(jj,ii),.true.)
-              
+
 !            mapj(jj,ii) = jmin
 !            mapi(jj,ii) = imin
           enddo
@@ -1160,7 +1160,7 @@ contains
           do j=1,nlon
 !             rain(i,j) = rani(mapi(nlon-i+1,nlat-j+1),mapj(nlon-i+1,nlat-j+1))
              rain(j,i) = rani(mapj(j,i),mapi(j,i))
-             
+
              rsrm(j,i)=srccode
           end do
         end do
@@ -1168,7 +1168,7 @@ contains
 !         tallint = tallintf - tallinti
         return
       end if
-    end if      
+    end if
 !   write (logfile,'(18x,a)') 'Cressman Algorithm to build rain field.'
 !    CALL CPU_TIME(tcressi)
     call ncressman(pi,la,lo,n,rchym,radius,rain,ca,wrk2,lat,lon, &
@@ -1189,9 +1189,9 @@ contains
 !    call cpu_time(tautof)
 !    tautot = tautot + tautof - tautoi
     do j=1,nlat
-      do i=1,nlon 
+      do i=1,nlon
         if (canc(i,j).eq.1.and.ca(i,j).eq.8) then
-          ca(i,j)=0 
+          ca(i,j)=0
           rsrm(i,j)=srccode
         end if
       end do
@@ -1369,7 +1369,11 @@ contains
     if ( ora==0 ) then
       wk(1:nlon,1:nlat) = 1000.0*deepw(1:nlon,1:nlat)*area(1:nlon,1:nlat)
       call rollingstones2(wk,fmap,ddeepw,nlon,nlat)
-      ddeepw(1:nlon,1:nlat) = .001*(ddeepw(1:nlon,1:nlat)/drai(1:nlon,1:nlat))
+      do i = 2 , nlon - 1
+        do j = 2, nlat - 1
+          ddeepw(i,j) = .001*(ddeepw(i,j)/max(drai(i,j),0.1))
+        end do
+      end do
     end if
     do i = 2 , nlon - 1
       do j = 2 , nlat - 1
@@ -1390,14 +1394,14 @@ contains
     call monthofyear(mese,-1,str)
     write (logfile,'(16x,a)') 'Acquiring ERA40 monthly average '// &
           'temperature for '//str
-    lun=-1 
+    lun=-1
     call openmuseofiles(lun,'worldtemp.dat',0)
-    do i=1,mese 
+    do i=1,mese
       read(lun) tmpt
     enddo
     close(lun)
     call kelvin2centi(tmpt,360,181,1)
-    do i=1,nlon 
+    do i=1,nlon
       do j=1,nlat
         ii=int(lon(i,j))+181
         jj=int(lat(i,j))+91
@@ -1408,14 +1412,14 @@ contains
         wt=w1+w2+w3+w4
         temp(i,j)=(tmpt(ii,jj)*w1+tmpt(ii+1,jj)*w2+ &
                    tmpt(ii,jj+1)*w3+tmpt(ii+1,jj+1)*w4)/wt
-      enddo 
+      enddo
     enddo
   end subroutine tempfromera40
 
   subroutine tempfrommuseo(iflg)
     implicit none
-    integer, parameter :: ixm = 70 
-    integer, parameter :: jxm = 70 
+    integer, parameter :: ixm = 70
+    integer, parameter :: jxm = 70
     real, dimension(ixm,jxm,25) :: p
     real, dimension(ixm,jxm,24) :: t
     real, dimension(ixm,jxm) :: xlat, xlon
@@ -1426,7 +1430,7 @@ contains
     character(len=30) :: ifile
     character(len=30), save :: ofile
     character(len=60) :: now
-    data ofile,lun /'notyetread',-1/ 
+    data ofile,lun /'notyetread',-1/
     call gmafromindex(time,ora,giorno,mese,anno)
     call datafromidx(time,now)
     write(ifile,'(a,i4,i1,a)') 'mm5t2m',anno,mchym(12),'.dat'
@@ -1540,6 +1544,7 @@ contains
     real , dimension(4) :: eh , h
     logical :: first
     integer , dimension(2) :: ih , iq , klat , klon
+    real , dimension(3) :: xabc
     integer :: il , jl , k , l , lun
     data first/.true./   ! ordine eq., n=numero di coeff.
     save first
@@ -1564,7 +1569,10 @@ contains
     klon(1) = int(jlon)
     klon(2) = int(jlon) + 1
     do k = 1 , 2
-      wta = polyval(temp,3,abc(iq(k),:))       ! Wta,eq: Wta=A*T^2+B*T+C
+      xabc(1) = abc(iq(k),1)
+      xabc(2) = abc(iq(k),2)
+      xabc(3) = abc(iq(k),3)
+      wta = polyval(temp,3,xabc)       ! Wta,eq: Wta=A*T^2+B*T+C
       x = temp*n*wta ! polyval per ETo= b*(N*T*Wta)+a
       num = 0
       den = 0
@@ -1601,7 +1609,7 @@ contains
     data (valq(i),i = 1,6)/0 , 500 , 1000 , 2000 , 3000 , 4000/
 
     k = 0
-    do while ( k<6 )
+    do while ( k<5 )
       k = k + 1
       if ( quota>=valq(k) .and. quota<valq(k+1) ) then
         iq(1) = k
@@ -1724,7 +1732,7 @@ contains
         end if
       end do
     end do
-  end subroutine 
+  end subroutine
 
   subroutine acqwamodis(giorno,mese,anno,mat)
     implicit none
@@ -1733,7 +1741,7 @@ contains
     intent (out) mat
     real , dimension(580,878) :: dati
     real  :: xx,yy,xla,xlo
-    real , save :: dlat , dlon , dx , dy , slat , slon , x1 ,y1 
+    real , save :: dlat , dlon , dx , dy , slat , slon , x1 ,y1
     logical :: first , nolonger
     integer :: i , il , j , jl , logfile , lun , nx , ny , irec
     integer , save :: oldrec , oldyear
@@ -1943,7 +1951,7 @@ contains
 !             iphase=-1
 !             return
 !          endif
-!          islice=0 ; iphase=0 ; istart=0 
+!          islice=0 ; iphase=0 ; istart=0
 !       endif
 !------------------------------------------------------------------------------
         if (iphase.lt.0) return
@@ -2086,8 +2094,8 @@ contains
       integer :: n,nhour,nstat
       integer  :: adate,shour,sdate
       real :: cs
-      character(len=50) :: a 
-      character(len=5) :: d 
+      character(len=50) :: a
+      character(len=5) :: d
       character(len=256) :: lfile
 !      real , allocatable , dimension(:) :: pi,pi1,lat,lon
       integer, parameter :: mxnicorw=1100000

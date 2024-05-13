@@ -176,7 +176,8 @@ AM_CONDITIONAL(CHYM_PARALLEL, [ test x"$PARALLEL" = "x1"])
 # Force Big endian I/O for known compilers
 if test -z "$COMPILER_GNU_TRUE"; then
 #for debugging  FCFLAGS="-fconvert=big-endian -fno-range-check -finline-functions -g -fcheck=all -Wall"
-  FCFLAGS="-fconvert=big-endian -fno-range-check -finline-functions "
+  #FCFLAGS="-fconvert=big-endian -fno-range-check -finline-functions "
+  FCFLAGS="-fconvert=big-endian -g -fcheck=all -Wall"
   CPRDEF="GNU"
   AC_SUBST(FCFLAGS)
 fi
@@ -215,10 +216,20 @@ if test -z "$COMPILER_G95_TRUE"; then
   AC_SUBST(FCFLAGS)
 fi
 if test -z "$COMPILER_GNU_TRUE"; then
-  FCFLAGS="-O2 -mtune=native $FCFLAGS"
+  #FCFLAGS="-O0 -g -pg -ffpe-trap=zero,invalid,overflow,underflow -fbacktrace \
+  #         -fdump-core -Wall -pedantic -Wconversion -Wsurprising -Waliasing \
+  #         -Wampersand -Warray-bounds -Wcharacter-truncation -Wuninitialized \
+  #         -Wline-truncation -Wintrinsics-std -Wno-tabs -Wunderflow \
+  #         -Wunused-parameter -Wno-align-commons $FCFLAGS \
+  #         -fno-range-check -Wimplicit-interface -Wimplicit-procedure \
+  #         -Wintrinsic-shadow -fcheck=array-temps,bounds,do,mem,recursion"
+  #FCFLAGS="-O2 -mtune=native $FCFLAGS"
+  FCFLAGS="-O0 -fbacktrace $FCFLAGS"
   AC_SUBST(FCFLAGS)
 fi
 if test -z "$COMPILER_INTEL_TRUE"; then
+  #FCFLAGS="-O0 -fpe0 -g -check all -traceback -warn all -ftz \
+  #         -fimf-arch-consistency=true -fltconsistency -mieee-fp $FCFLAGS"
   FCFLAGS="-O2 -fp-model fast=2 -ip $FCFLAGS"
   AC_SUBST(FCFLAGS)
 fi
