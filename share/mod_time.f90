@@ -48,7 +48,7 @@ module mod_time
       call mvsetflags('Century',float(censave))
     end if
   end function nslicetoskip
- 
+
   integer function indtimeal(date1,date2)
     implicit none
     integer :: date1 , date2
@@ -77,7 +77,7 @@ module mod_time
       indtimeal = 0
     end if
   end function indtimeal
- 
+
   integer function i4digityear(anno)
     implicit none
     integer :: anno
@@ -93,14 +93,14 @@ module mod_time
       end if
     end if
   end function i4digityear
- 
+
   integer function julianday(id,im,iy)
     implicit none
     integer :: id , im , iy
     intent(in) :: id , im , iy
     julianday = index1d(id,im,iy)
   end function julianday
- 
+
   integer function index1d(id,im,iy)
     implicit none
     integer :: id , im , iy
@@ -111,28 +111,28 @@ module mod_time
     end if
     index1d = dfc(im) + id
   end function index1d
- 
+
   integer function index3h(ora,giorno,mese,anno)
     implicit none
     integer :: anno , giorno , mese , ora
     intent (in) anno , giorno , mese , ora
     index3h = (index1d(giorno,mese,anno)-1)*8 + ora/3 + 1
   end function index3h
- 
+
   integer function index1h(ora,giorno,mese,anno)
     implicit none
     integer :: anno , giorno , mese , ora
     intent (in) anno , giorno , mese , ora
     index1h = (index1d(giorno,mese,anno)-1)*24 + ora + 1
   end function index1h
- 
+
   integer function index15m(minuti,ora,giorno,mese,anno)
     implicit none
     integer :: anno , giorno , mese , minuti , ora
     intent (in) anno , giorno , mese , minuti , ora
     index15m = (index1d(giorno,mese,anno)-1)*4*24 + ora*4 + minuti/15 + 1
   end function index15m
- 
+
   subroutine datafromindex15(dindex,anno,cdata)
     implicit none
     integer :: anno , dindex
@@ -144,7 +144,7 @@ module mod_time
     call dayfromindex15(dindex,minuto,ora,giorno,mese,anno)
     call datafrommin(minuto,ora,giorno,mese,anno,cdata)
   end subroutine datafromindex15
- 
+
   subroutine dayfromindex1h(irec,ora,giorno,mese,anno)
     implicit none
     integer :: anno , giorno , mese , ora , irec
@@ -158,7 +158,7 @@ module mod_time
       ora = irec - 24*(irec/24) - 1
     end if
   end subroutine dayfromindex1h
- 
+
   subroutine dayfromindex15(dindex,minuto,ora,giorno,mese,anno)
     implicit none
     integer :: anno , giorno , dindex , mese , minuto , ora
@@ -181,7 +181,7 @@ module mod_time
       minuto = (nqu-ora*4)*15
     end if
   end subroutine dayfromindex15
- 
+
   integer function indexofyear(id,im,iy)
     implicit none
     integer :: id , im , iy
@@ -213,14 +213,14 @@ module mod_time
     end if
     monthlen = mesi(im)
   end function monthlen
- 
+
   subroutine datafromday(id,im,iy,cdata)
     implicit none
     character(len=*) :: cdata
     integer :: id , im , iy
     call datafromindex(indexofyear(id,im,iy),iy,cdata)
   end subroutine datafromday
- 
+
   integer function decreasemm5index(dindex)
     implicit none
     integer :: dindex
@@ -237,19 +237,20 @@ module mod_time
         oldyear = iy
         call definizionedimvtime
         im = im - 1
-        id = mesi(im)
         if ( im<1 ) then
           im = 12
           id = 31
           iy = iy - 1
           oldyear = iy
           call definizionedimvtime
+        else
+          id = mesi(im)
         end if
       end if
     end if
     decreasemm5index = ih + id*100 + im*10000 + iy*1000000
   end function decreasemm5index
- 
+
   subroutine tomorrow(id,im,iy)
     implicit none
     integer :: id , im , iy
@@ -266,7 +267,7 @@ module mod_time
       end if
     end if
   end subroutine tomorrow
- 
+
   integer function increasemm5index(dindex)
     implicit none
     integer :: dindex
@@ -301,7 +302,7 @@ module mod_time
       increasemm5index = ih + id*100 + im*10000 + iy*1000000
     end if
   end function increasemm5index
- 
+
   integer function increasetime(dindex)
     implicit none
     integer :: dindex
@@ -346,7 +347,7 @@ module mod_time
     return
  100  increasetime = -9999
   end function increasetime
- 
+
   integer function mm5index(ih,id,im,iy)
     implicit none
     integer :: id , ih , im , iy
@@ -363,7 +364,7 @@ module mod_time
     end if
     mm5index = ih + id*100 + im*10000 + lyp*1000000
   end function mm5index
- 
+
   subroutine datafromhour(ih,id,im,iy,cdata)
     implicit none
     character(len=*) :: cdata
@@ -372,7 +373,7 @@ module mod_time
     intent(out) :: cdata
     call dataorafromday(ih,id,im,iy,cdata)
   end subroutine datafromhour
- 
+
   subroutine datafrommin(imm,ih,id,im,iy,cdata)
     implicit none
     character(len=*) :: cdata
@@ -388,7 +389,7 @@ module mod_time
     if ( iflg(10)==4 ) cdata = trim(cdata)//' UGT'
     if ( iflg(10)==5 ) cdata = trim(cdata)//' CEST'
   end subroutine datafrommin
- 
+
   subroutine dataorafromday(ih,id,im,iy,cdata)
     implicit none
     character(len=*) :: cdata
@@ -405,7 +406,7 @@ module mod_time
     if ( iflg(10)==4 ) cdata = trim(cdata)//' UGT'
     if ( iflg(10)==5 ) cdata = trim(cdata)//' CEST'
   end subroutine dataorafromday
- 
+
   subroutine datafrommm5index(dindex,cdata)
     implicit none
     character(len=*) :: cdata
@@ -485,7 +486,7 @@ module mod_time
     call no2space(cdata)
     call noinspace(cdata)
   end subroutine datafromidx
- 
+
   integer function indexfrommm5index(dindex)
     implicit none
     integer :: dindex
@@ -502,7 +503,7 @@ module mod_time
     end if
     indexfrommm5index = indexofyear(id,im,iy)
   end function indexfrommm5index
- 
+
   subroutine gmafrommm5index(dindex,ih,id,im,iy)
     implicit none
     integer :: id , ih , im , dindex , iy
@@ -544,7 +545,7 @@ module mod_time
       id = -9999
       ih = -9999
   end subroutine gmafromindex
- 
+
   subroutine monthofyear(im,iy,cdata)
     implicit none
     character(len=*) :: cdata
@@ -560,7 +561,7 @@ module mod_time
     end if
     if ( iy>0 ) write (cdata,'(a,1x,i4)') trim(cdata) , iy
   end subroutine monthofyear
- 
+
   subroutine nomedelmese(im,nome)
     implicit none
     integer :: im
@@ -575,7 +576,7 @@ module mod_time
       nome = emonths(im)(1:3)
     end if
   end subroutine nomedelmese
- 
+
   subroutine datafromindex(dindex,anno,cdata)
     implicit none
     integer :: anno , dindex
@@ -607,7 +608,7 @@ module mod_time
       call noinspace(cdata)
     end if
   end subroutine datafromindex
- 
+
   subroutine dayfromindex(dindex,id,im,iy)
     implicit none
     integer :: id , im , dindex , iy
@@ -627,7 +628,7 @@ module mod_time
     end do
     write (6,'(a,i10)') ' Bad index passed to dayfromindex ' , dindex
   end subroutine dayfromindex
- 
+
   integer function iweekday(id,im,iy)
     implicit none
     integer :: id , im , iy
@@ -644,7 +645,7 @@ module mod_time
     end if
     iweekday = mod(igiorni,7) + 1
   end function iweekday
- 
+
   integer function notteogiorno(lat,lon,ore,minuti,giorno,mese)
     implicit none
     integer :: giorno , mese , minuti , ore
@@ -661,7 +662,7 @@ module mod_time
       notteogiorno = 0
     end if
   end function notteogiorno
- 
+
   subroutine localtime2ugt(ora,giorno,mese,anno)
     implicit none
     integer :: anno , giorno , mese , ora
@@ -717,7 +718,7 @@ module mod_time
       end if
     end if
   end subroutine localtime2ugt
- 
+
   subroutine ugt2localtime(ora,giorno,mese,anno)
     implicit none
     integer :: anno , giorno , mese , ora
@@ -781,14 +782,14 @@ module mod_time
       end if
     end if
   end subroutine ugt2localtime
- 
+
   subroutine whattimeisit(minuti,ora,giorno,mese,anno)
     implicit none
     integer :: anno , giorno , mese , minuti , ora
     intent (out) anno , giorno , mese , minuti , ora
     call cheorae(minuti,ora,giorno,mese,anno)
   end subroutine whattimeisit
- 
+
   subroutine cheorae(minuti,ora,giorno,mese,anno)
     implicit none
     integer :: anno , giorno , mese , minuti , ora
@@ -817,7 +818,7 @@ module mod_time
     sinphi = sin(xlat)*sin(ds) - cos(xlat)*cos(ds) * &
              cos(2.0*pi*dt/(24.*60.)-xlon)
   end function sinphi
- 
+
   real function zenith(lat,lon,minuti,ore,giorno,mese)
     implicit none
     integer :: giorno , mese , minuti , ore
@@ -878,8 +879,8 @@ module mod_time
   end function get_nowdate
 
   subroutine chkcentury(string)
-    implicit none 
-    integer anno 
+    implicit none
+    integer anno
     character(len=4) :: yst
     character(len=*) :: string
 
