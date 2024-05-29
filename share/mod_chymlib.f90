@@ -231,7 +231,7 @@ module mod_chymlib
     intent (inout) cout
     integer :: di , dj , i , idir , ist , j , jst , n , ncycle
     logical :: exceed
-    data ncycle/1000/
+    data ncycle/10000/
     save ncycle
     exceed = .false.
     cout = rntime
@@ -271,7 +271,7 @@ module mod_chymlib
     intent (inout) rout
     logical :: exceed
     integer :: i , idir , ist , j , jst , n , ncycle
-    data ncycle/1000/
+    data ncycle/10000/
     save ncycle
     exceed = .false.
     do i = 1 , nlon

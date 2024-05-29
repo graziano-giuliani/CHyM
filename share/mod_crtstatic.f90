@@ -38,7 +38,7 @@ module mod_crtstatic
   subroutine builddem
     implicit none
     dem = -1.0
-    write (6,'(/12x,a)') 'Builting Digital Elevation model from MuSEO db.'
+    write (6,'(/12x,a)') 'Building Digital Elevation model.'
     mchym(13) = 20
     if ( mchym(13)==2 .or. mchym(13)==3 .or. mchym(13)>=21 ) call worlddem
     if ( mchym(13)==1 .or. mchym(13)==3 ) call italydem
@@ -548,7 +548,8 @@ module mod_crtstatic
     integer :: ncid , ivarid , istatus
     character(len=132) :: cfile
     cfile = 'mydem.nc'
-    write(6,'(21x,a)') 'Reading '//cfile(1:len_trim(cfile))
+    write(6,'(21x,a)') 'Reading pre-processed DEM from '// &
+            cfile(1:len_trim(cfile))
     istatus = nf90_open(cfile,nf90_nowrite,ncid)
     if (istatus /= nf90_noerr) then
        write(6,'(/,14x,a,a,a,a)')  'File '//trim(cfile)//' not found'
@@ -2352,7 +2353,7 @@ module mod_crtstatic
       do i = 2 , nlon - 1
         do j = 2 , nlat - 1
           if ( work(i,j)>10.0 .and. nint(plot(i,j))==-5 ) then
-            write (str1,'(i3,a,i3)') i , '-' , j
+            write (str1,'(i5,a,i5)') i , '-' , j
             call nospace(str1)
             write (str2,'(a,f10.1,a)') 'CHyM Angioplasty to cell: '//   &
                      trim(str1)//'(' , work(i,j) ,')'
