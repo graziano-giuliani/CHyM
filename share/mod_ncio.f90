@@ -1292,7 +1292,7 @@ module mod_ncio
           dirt,cfl)
       istatus = nf90_get_att(lunt,tcode,'add_offset', &
              tmp)
-      if ( istatus /= nf90_noerr ) then
+      if ( istatus == nf90_noerr ) then
         offset = tmp
         istatus = nf90_get_att(lunt,tcode,'scale_factor',tmp)
         call chkncstatus(istatus,nf90_noerr,'scale factor',dirt,cfl)
@@ -1768,7 +1768,7 @@ module mod_ncio
 !       print*,"schiatti qui5?"
 
         istatus = nf90_get_att(lun,pcode,'add_offset', tmp)
-        if ( istatus /= nf90_noerr ) then
+        if ( istatus == nf90_noerr ) then
           offset = tmp
           istatus = nf90_get_att(lun,pcode,'scale_factor',tmp)
           call chkncstatus(istatus,nf90_noerr,'scale factor',dir,cfl)
@@ -1847,7 +1847,7 @@ module mod_ncio
 !       print*,'pcode',pcode
 
        istatus = nf90_get_att(lun,pcode,'add_offset',tmp)
-       if ( istatus /= nf90_noerr ) then
+       if ( istatus == nf90_noerr ) then
          offset = tmp
          istatus = nf90_get_att(lun,pcode,'scale_factor',tmp)
          call chkncstatus(istatus,nf90_noerr,'scale factor',dir,cfl)
@@ -2257,7 +2257,7 @@ module mod_ncio
       call chkncstatus(istatus,nf90_noerr,'Error read var tp era',dir,cfl)
       istatus = nf90_get_att(lun,pcode, &
             'scale_factor',scalef)
-      if ( istatus /= nf90_noerr ) then
+      if ( istatus == nf90_noerr ) then
         istatus = nf90_get_att(lun,pcode,  &
              'add_offset',offset)
         call chkncstatus(istatus,nf90_noerr,'Error find att add_offset',dir,cfl)
@@ -2321,7 +2321,7 @@ module mod_ncio
        call chkncstatus(istatus,nf90_noerr,'Error read var tp era',dir,cfl)
        istatus = nf90_get_att(lun,pcode, &
              'scale_factor',scalef)
-       if ( istatus /= nf90_noerr ) then
+       if ( istatus == nf90_noerr ) then
          istatus = nf90_get_att(lun,pcode,  &
               'add_offset',offset)
          call chkncstatus(istatus,nf90_noerr,'Error find att add_offset',dir,cfl)
