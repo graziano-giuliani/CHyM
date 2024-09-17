@@ -16,9 +16,9 @@
 !    along with ICTP CHyM.  If not, see <http://www.gnu.org/licenses/>.
 !
 !::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-       
+
 module mod_ncio
-  
+
   use netcdf
   use mod_internal
   use mod_statparams
@@ -197,12 +197,12 @@ module mod_ncio
     !iretval = nf90_create(outname,nf90_clobber,ncid)
     if (deflate_level>0) then
       iretval = nf90_create(outname,nf90_netcdf4,ncid)
-    else if (deflate_level==0) then 
+    else if (deflate_level==0) then
       iretval = nf90_create(outname,nf90_clobber,ncid)
     else
       print*,"deflate_level not valid EXIT"
     end if
-    
+
     call checknetcdfresult('create output file')
 
     iretval = nf90_def_dim(ncid,'lon',nlon,id_dims(1))
@@ -224,7 +224,7 @@ module mod_ncio
     iretval = nf90_put_att(ncid,nf90_global,'institution',institution)
     call checknetcdfresult('Add global attribute')
     iretval = nf90_put_att(ncid,nf90_global,'source',source)
-    call checknetcdfresult('Add global attribute') 
+    call checknetcdfresult('Add global attribute')
     iretval = nf90_put_att(ncid,nf90_global,'comment', &
              'Input dataset is '//trim(schym(15)))
     call checknetcdfresult('Add global attribute')
@@ -421,7 +421,7 @@ module mod_ncio
     lat0 = rchym(2)
     dlon = rchym(8)
     dlat = rchym(9)
-    
+
     nrestart = 5
     allocate(maprst_ids(nrestart))
 
@@ -432,7 +432,7 @@ module mod_ncio
     else
       print*,"deflate_level not valid EXIT"
     end if
-    
+
     call checknetcdfresult('create restart file')
     iretval = nf90_def_dim(ncidrst,'lon',nlon,rd_dims(1))
     call checknetcdfresult('Add lon dimension')
@@ -849,9 +849,9 @@ module mod_ncio
     call chkncstatus(istatus,nf90_noerr,'time code',schym(18),'')
     istatus = nf90_inquire_dimension(lun,icode,len=itime)
     call chkncstatus(istatus,nf90_noerr,'time dim',schym(18),'')
-    istart(1)=1 
-    istart(2)=1 
-    icount(1)=nlon 
+    istart(1)=1
+    istart(2)=1
+    icount(1)=nlon
     icount(2)=nlat
     istart(3)=itime ; icount(3)=1
     istatus = nf90_inq_varid(lun,'rpor',icode)
@@ -943,7 +943,7 @@ module mod_ncio
         trim(schym(12)),'')
       istatus = nf90_get_att(lun,nf90_global,'Start_latitude',slat)
       call chkncstatus(istatus,nf90_noerr,'Start_latitude',trim(schym(12)),'')
-      istatus = nf90_get_att(lun,nf90_global, & 
+      istatus = nf90_get_att(lun,nf90_global, &
             'approximate_lat-lon_resolution_in_meters',dij1)
       call chkncstatus(istatus,nf90_noerr,   &
         'approximate_lat-lon_resolution_in_meters',trim(schym(12)),'')
@@ -1208,19 +1208,21 @@ module mod_ncio
     integer :: ora,giorno,mese,anno,ifl,ni,log,n,i,j,istatus,rec,itime
     integer :: lunt,len_trim,na,nrec
     real, dimension(nlon*nlat) :: pi, la, lo
-    integer :: nlon,nlat,tcode
+    integer :: nlon,nlat,tcode,xcode
     logical :: bisest
-    logical first 
-    data first /.true./ 
+    logical first
+    data first /.true./
     save first
     integer :: xmese
-    integer :: n2dim 
+    integer :: n2dim
     parameter (n2dim=120000)
     character(len=8) :: adata
     character(len=60) :: dirt
     character(len=132) :: cfl, oldcflt
-    save :: tcode,lunt,oldcflt,dirt
+    save :: tcode,lunt,oldcflt,dirt,xcode
     real, dimension(nlon,nlat) :: tmpm, temp
+    real, dimension(nlon) :: xlon
+    real, dimension(nlat) :: xlat
     real :: fill_value,tmp,offset,scalef
     integer, dimension(4) :: istart, icount
     xmese=0
@@ -1233,7 +1235,7 @@ module mod_ncio
 !    end if
     write(adata,'(i8)') anno*10000+mese*100+giorno
     if (first) then
-      call mvgetiflags(70,log) 
+      call mvgetiflags(70,log)
       if (log.le.0.or.log.ge.100) log=6
       if (mchym(15) == 6) then
         dirt="./museo/TEMP/EIN75/"
@@ -1251,7 +1253,10 @@ module mod_ncio
       call chkncstatus(istatus,nf90_noerr,'open',dirt,cfl)
       oldcflt=cfl
       istatus = nf90_inq_varid(lunt,'t2m',tcode)
-      call chkncstatus(istatus,nf90_noerr,'temp code',dirt,cfl)
+      if ( istatus /= nf90_noerr ) then
+        istatus = nf90_inq_varid(lunt,'tas',tcode)
+        call chkncstatus(istatus,nf90_noerr,'temp code',dirt,cfl)
+      end if
       istatus = nf90_inq_varid(lunt,'time',itime)
       call chkncstatus(istatus,nf90_noerr,'time',dirt,cfl)
       first=.false.
@@ -1279,7 +1284,7 @@ module mod_ncio
     end if
     if (nrec.eq.0) nrec=1
     if (ifl.eq.1) then
-      istart(3)=nrec 
+      istart(3)=nrec
       icount(3)=1
       istatus = nf90_get_var(lunt,tcode,tmpm,istart(1:3), &
               icount(1:3))
@@ -1316,6 +1321,17 @@ module mod_ncio
           la(na)=eralat5(i,j) ; lo(na)=eralon5(i,j)
         enddo
       enddo
+    else if (mchym(15) == 8) then
+      istatus = nf90_inq_varid(lunt,'lon',xcode)
+      istatus = nf90_get_var(lunt,xcode,xlon)
+      istatus = nf90_inq_varid(lunt,'lat',xcode)
+      istatus = nf90_get_var(lunt,xcode,xlat)
+      do i=1,nlon
+        do j=1,nlat
+          na=na+1
+          la(na)=xlat(j) ; lo(na)=xlon(i)
+        enddo
+      enddo
     end if
     return
   end subroutine ein75readnc
@@ -1326,8 +1342,8 @@ module mod_ncio
     integer :: ora,giorno,mese,anno,ifl,n,na
     integer :: pnlon,pnlat,i,j,itime
     real, dimension(pnlon*pnlat) :: pi, la, lo
-    logical first 
-    data first /.true./ 
+    logical first
+    data first /.true./
     save first
     character(len=26) :: dir
     character(len=132) :: cfl, oldcfl
@@ -1367,7 +1383,7 @@ module mod_ncio
       call exit(1)
     endif
     if (first) then
-      call mvgetiflags(70,log) 
+      call mvgetiflags(70,log)
       if (log.le.0.or.log.ge.100) log=6
       write(cfl,'(a,i4,a)') 'PERSIANN-HOURLY_',anno,'.nc'
       call getlun(lun)
@@ -1427,7 +1443,7 @@ module mod_ncio
       lo(na)=persiannlon0_25(i,j)
     enddo ; enddo
     call mvsetflags('Calendar',0.0)
-  end subroutine persiannreadncll 
+  end subroutine persiannreadncll
 
   subroutine trimmreadncll(tnlon,tnlat,ora,giorno,mese,anno,ifl,pi &
              ,la,lo,n)
@@ -1436,8 +1452,8 @@ module mod_ncio
     integer :: ianno
     integer :: tnlon,tnlat,i,j,itime,rdata
     real, dimension(tnlon*tnlat) :: pi, la, lo
-    logical :: first 
-    data first /.true./ 
+    logical :: first
+    data first /.true./
     save first
     character(len=60) :: dir
     character(len=132) :: cfl, oldcfl
@@ -1578,7 +1594,7 @@ module mod_ncio
         na=na+1
         la(na)=trimmlat(i,j)
         lo(na)=trimmlon(i,j)
-      enddo 
+      enddo
     enddo
     return
   end subroutine trimmreadncll
@@ -1588,10 +1604,10 @@ module mod_ncio
     implicit none
     integer :: ora,giorno,mese,anno,ifl,n,na,nrec
     integer :: nlon,nlat,i,j,itime,rdata,ifin,jfin
-    logical first 
-    data first /.true./ 
+    logical first
+    data first /.true./
     save first
-    character(len=60) :: dir 
+    character(len=60) :: dir
     character(len=132) :: cfl,oldcfl
     character(len=64) :: rainmis
     save rainmis,oldcfl
@@ -1668,11 +1684,11 @@ module mod_ncio
       ! Find window to read
       !
       call get_window(glat,glon,lat,lon,iband,gdomain)
-      
+
       allocate (tmpm(sum(gdomain%ni),gdomain%nj), raini(sum(gdomain%ni),gdomain%nj), &
                 rainiold15(sum(gdomain%ni),gdomain%nj),rainiold75(sum(gdomain%ni),gdomain%nj))
-      tmpm = 0 
-      raini = 0 
+      tmpm = 0
+      raini = 0
 
       istatus = nf90_inq_varid(lun,'tp',pcode)
       if (istatus.ne.nf90_noerr) then
@@ -1921,7 +1937,7 @@ module mod_ncio
 !OLDFF        na = na+1 !FF
 !OLDFF        lo(na) =slon + dij*i !FF
 !OLDFF        la(na) = slat + dij*j !!FFF
-!OLDFF      end do   !!FF   
+!OLDFF      end do   !!FF
 !OLDFF    end do   !!FF
 !       if (allocated(la)) deallocate(la)
 !       allocate(la(sum(gdomain%ni)*gdomain%nj))
@@ -1955,10 +1971,10 @@ module mod_ncio
     implicit none
     integer :: ora,giorno,mese,anno,ifl,n,na,nrec
     integer :: nlon,nlat,i,j,itime,rdata,ifin,jfin
-    logical first 
-    data first /.true./ 
+    logical first
+    data first /.true./
     save first
-    character(len=60) :: dir 
+    character(len=60) :: dir
     character(len=132) :: cfl,oldcfl
     character(len=64) :: rainmis
     save rainmis,oldcfl
@@ -1998,8 +2014,8 @@ module mod_ncio
         pfact=1000./3.
       else if (rdata == 10) then
         dir="./museo/PREC/EIN75/"
-!        write(cfl,'(a,i4,a)') 'erainterim_075_',anno,'.nc' 
-        write(cfl,'(a,i4,a,i4,a)') 'erai_precip_',anno,'0101_',anno,'1231_00_0.75.nc' 
+!        write(cfl,'(a,i4,a)') 'erainterim_075_',anno,'.nc'
+        write(cfl,'(a,i4,a,i4,a)') 'erai_precip_',anno,'0101_',anno,'1231_00_0.75.nc'
         write(log,'(18x,a,a,i4,a)')'Opening Era file ERAIN75', &
         'erainterim_075_',anno,'.nc'
         pfact=1.
@@ -2019,10 +2035,10 @@ module mod_ncio
       ! Find window to read
       !
       call get_window(glat,glon,lat,lon,iband,gdomain)
-      
+
       allocate (tmpm(sum(gdomain%ni),gdomain%nj), raini(sum(gdomain%ni),gdomain%nj), &
                 rainiold15(sum(gdomain%ni),gdomain%nj),rainiold75(sum(gdomain%ni),gdomain%nj))
-      raini = 0 
+      raini = 0
 
       istatus = nf90_inq_varid(lun,'rain',pcode)
       if (istatus.ne.nf90_noerr) then
@@ -2124,10 +2140,10 @@ module mod_ncio
     implicit none
     integer :: ora,giorno,mese,anno,ifl,n,na,nrec
     integer :: nlon,nlat,i,j,itime,rdata,ifin,jfin
-    logical first 
-    data first /.true./ 
+    logical first
+    data first /.true./
     save first
-    character(len=60) :: dir 
+    character(len=60) :: dir
     character(len=132) :: cfl,oldcfl
     character(len=64) :: rainmis
     character(len=8) :: adata
@@ -2169,8 +2185,8 @@ module mod_ncio
         pfact=1000./3.
       else if (rdata == 10) then
         dir="./museo/PREC/EIN75/"
-!        write(cfl,'(a,i4,a)') 'erainterim_075_',anno,'.nc' 
-        write(cfl,'(a,i4,a,i4,a)') 'erai_precip_',anno,'0101_',anno,'1231_00_0.75.nc' 
+!        write(cfl,'(a,i4,a)') 'erainterim_075_',anno,'.nc'
+        write(cfl,'(a,i4,a,i4,a)') 'erai_precip_',anno,'0101_',anno,'1231_00_0.75.nc'
         write(log,'(18x,a,a,i4,a)')'Opening Era file ERAIN75', &
         'erainterim_075_',anno,'.nc'
         pfact=1000./3.
@@ -2196,7 +2212,7 @@ module mod_ncio
       ! Find window to read
       !
 !      call get_window(glat,glon,lat,lon,iband,gdomain)
-      
+
       istatus = nf90_inq_varid(lun,'rain',pcode)
       if (istatus.ne.nf90_noerr) then
           istatus = nf90_inq_varid(lun,'TP',pcode)
@@ -2209,11 +2225,11 @@ module mod_ncio
       call chkncstatus(istatus,nf90_noerr,'time',dir,cfl)
       if (.not.allocated(raini)) allocate (raini(nlon,nlat))
       raini = 0
-      if (.not.allocated(tmpm) .and. rdata /= 14) then 
+      if (.not.allocated(tmpm) .and. rdata /= 14) then
         allocate (tmpm(nlon,nlat))
         tmpm = 0
       end if
-      if (rdata == 14) then 
+      if (rdata == 14) then
         rec=(giorno-1)*24+(ora)+1
       else
         rec=(xmese*8+(giorno-1)*8+(ora/3))+1
@@ -2239,7 +2255,7 @@ module mod_ncio
         call chkncstatus(istatus,nf90_noerr,'Error read var tp era',dir,cfl)
         tmpm = (tmpm*scalef)+offset
         raini = ((raini*scalef)+offset)-tmpm
-      else 
+      else
         raini = ((raini*scalef)+offset)
       end if
       call erashiftlon(raini,nlon,nlat)
@@ -2252,7 +2268,7 @@ module mod_ncio
     end if
     if (rdata == 10) then
 !      write(cfl,'(a,i4,a)') 'erainterim_075_',anno,'.nc'
-      write(cfl,'(a,i4,a,i4,a)') 'erai_precip_',anno,'0101_',anno,'1231_00_0.75.nc' 
+      write(cfl,'(a,i4,a,i4,a)') 'erai_precip_',anno,'0101_',anno,'1231_00_0.75.nc'
     end if
     if (rdata == 14) then
       write(cfl,'(a,a,a,a,a)') 'pr_',adata(1:4),'_',adata(5:6),'.nc'
@@ -2266,7 +2282,7 @@ module mod_ncio
        call chkncstatus(istatus,nf90_noerr,'open',trim(dir),cfl)
        oldcfl=cfl
     endif
-    if (rdata == 14) then 
+    if (rdata == 14) then
       nrec=(giorno-1)*24+(ora)+1
     else
       nrec=(xmese*8+(giorno-1)*8+(ora/3))+1
@@ -2275,7 +2291,7 @@ module mod_ncio
     if (ifl.eq.1) then
        if (.not.allocated(raini)) allocate (raini(nlon,nlat))
        raini = 0
-       if (.not.allocated(tmpm) .and. rdata /= 14) then 
+       if (.not.allocated(tmpm) .and. rdata /= 14) then
          allocate (tmpm(nlon,nlat))
          tmpm = 0
        end if
@@ -2334,6 +2350,13 @@ module mod_ncio
          do j=1,nlat
         na=na+1
         la(na)=eralat5(i,j) ; lo(na)=eralon5(i,j)
+      enddo ; enddo
+    end if
+    if (rdata == 16) then
+      do i=1,nlon
+         do j=1,nlat
+        na=na+1
+        la(na)=glat(j) ; lo(na)=glon(i)
       enddo ; enddo
     end if
     if (allocated(raini)) deallocate(raini)
@@ -2419,12 +2442,12 @@ module mod_ncio
       pi(i)=gpi(i)
     enddo
     n = 3712
-    
+
   end subroutine hourlyrainnc
 
 !inmuseo  subroutine chkncstatus(istatus,nf90_noerr,field,dir,cfl)
 !inmuseo    implicit none
-!inmuseo    integer :: istatus,nf90_noerr 
+!inmuseo    integer :: istatus,nf90_noerr
 !inmuseo    character(len=*) :: field,dir,cfl
 !inmuseo    character(len=80) :: nf90_strerror
 !inmuseo    if (istatus.eq.nf90_noerr) return
@@ -2454,7 +2477,7 @@ module mod_ncio
     integer :: lun,idate,att,isize
     integer, dimension(nlon,nlat) :: mat
     character(len=*) :: field,vsource
-    character(len=2) :: ctype 
+    character(len=2) :: ctype
     character(len=3) :: chkfld
     integer i,j
     if (chymcrec.lt.0) call chymerror(16,-9999,-9999.0,'chymreadrec')
@@ -2479,7 +2502,7 @@ module mod_ncio
 
   subroutine chymreadrrec(lun,field,vsource,mat,idate)
     implicit none
-    integer :: lun,idate,att,isize 
+    integer :: lun,idate,att,isize
     real, dimension(nlon,nlat) :: mat
     character(len=*) :: field, vsource
     character(len=2) :: ctype

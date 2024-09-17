@@ -390,8 +390,10 @@
           end if
         else
           if (myid == 0) then
-            call temperature
-            call rainfall
+            if ( mod(hourstep,dsfreq).eq.0 ) then
+              call temperature
+              call rainfall
+            end if
             !'rain' has to be updated here because rain is modified by
             !one of the following calls too, before being written as 'ara'
             avgrain = avgrain + rain

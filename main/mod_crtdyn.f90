@@ -485,6 +485,13 @@ contains
        call temperaturefield(6)
     else if (mchym(15).eq.7) then
        call temperaturefield(7)
+    else if (mchym(15).eq.8) then
+       if (giorno.eq.oldday) then
+          if (mchym(23).eq.1) write(lun) temp
+          return
+       endif
+       call temperaturefield(8)
+       oldday=giorno
     else if (mchym(15).eq.21) then
        call temperaturefield(21)
     else if (mchym(15).eq.22) then
@@ -614,6 +621,10 @@ contains
 !      lsource='EIN75' ; rad=75000.0 ; ncacyc=10
        lsource='ERA5' ; rad=30000.0 ; ncacyc=30 ; useca=.true.
        call ein75readnc(1440,721,ora,giorno,mese,anno,1,xwk1,xwk2,xwk3,n)
+    else if (iflag.eq.8) then
+!      lsource='EIN75' ; rad=75000.0 ; ncacyc=10
+       lsource='ERA5' ; rad=30000.0 ; ncacyc=30 ; useca=.true.
+       call ein75readnc(129,120,ora,giorno,mese,anno,1,xwk1,xwk2,xwk3,n)
 !n    else if (iflag.eq.21) then
 !n       lsource='REMO25x25' ; rad=30000.0 ; ncacyc=10
 !n       call acqwascen01(ora,giorno,mese,anno,2,xwk1,xwk2,xwk3,n)
@@ -719,8 +730,12 @@ contains
     implicit none
     logical :: first
     integer :: i , ih , ii , j , lun , nn , nskip
+    integer :: ora,giorno,mese,anno
+    integer :: oldday
     data first/.true./
-    save first
+    data oldday/-1/
+    save first,oldday
+    call gmafromindex(time,ora,giorno,mese,anno)
     if ( first ) then
       call getlun(lun)
       if ( mchym(17)==2 ) then
@@ -787,6 +802,13 @@ contains
     if (srcflag(10)) call buildrainfield(10,ca)     ! EIN75
     if (srcflag(11)) call buildrainfield(11,ca)     ! EIN15
     if (srcflag(14)) call buildrainfield(14,ca)     ! ERA5
+    if (srcflag(16)) then
+       if (giorno.eq.oldday) then
+          return
+       endif
+       call buildrainfield(16,ca)     ! ERA5 (limited area)
+       oldday=giorno
+     end if
 !    if (srcflag(21)) call buildrainfield(21,ca)     ! ACQWA-ReMo 25x25
 !    if (srcflag(22)) call buildrainfield(22,ca)     ! ACQWA-RegCM 25x25
 !    if (srcflag(23)) call buildrainfield(23,ca)     ! ACQWA-ReMo 10x10
@@ -1051,6 +1073,11 @@ contains
       lsource='era5' ; nls=len_trim(lsource)
       write (logfile,'(16x,a)') '> Using re-analysis by '//lsource
       call erareadncll3(1440,721,ora,giorno,mese,anno,1,pi,la,lo,n,14)
+    else if (idata.eq.16) then
+      useca=.false. ; ncacyc=10 ; srccode=90 ; radius=30.0
+      lsource='era5' ; nls=len_trim(lsource)
+      write (logfile,'(16x,a)') '> Using re-analysis by '//lsource
+      call erareadncll3(129,120,ora,giorno,mese,anno,1,pi,la,lo,n,16)
 !    else if (idata.eq.15) then
 !      useca=.false. ; ncacyc=30 ; srccode=99 ; radius=27.5
 !      lsource='persiann' ; nls=len_trim(lsource)

@@ -70,6 +70,8 @@ module mod_runparams
       character(len=256) :: chem_symtype = 'Exercise with CHyM'
       character(len=256) :: chym_savefld = 'por,rai,evp,rsr,tem'
 
+      integer :: dsfreq = 1
+
       integer :: ilon1 = 1
       integer :: ilon2 = 150
       integer :: ilat1 = 1

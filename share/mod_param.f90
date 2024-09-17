@@ -423,6 +423,8 @@ module mod_param
         srcflag(14)=.true.
       else if ( trim(sources(i))=='txt' ) then
         srcflag(15)=.true.
+      else if ( trim(sources(i))=='era5l' ) then
+        srcflag(16)=.true.
       else if ( trim(sources(i))=='mm5file' ) then
         call getlun(lu(4))
         open(lu(4),status='old',form='unformatted',file=schym(2), &
@@ -566,7 +568,7 @@ module mod_param
                chym_pfile , chym_tfile , chym_dsource , chym_ifile1 ,              &
                chym_ifile2 , chym_regcm_rad , chem_symtype ,                       &
                chym_savefld , chym_netcdf , angionp , threshdr , numrivdr ,        &
-               numrunave , uphill , ncyc1 , ncyc2 , ncyc3,                         &
+               dsfreq , numrunave , uphill , ncyc1 , ncyc2 , ncyc3,                &
                integrflag , cpar1 , cpar2 , cpar3 , cpar4 , cpar5 , cpar6 ,        &
                cpar7 , cpar8 , cpar9 , cpar10 , infiltr , infi_lago ,              &
                infi_fiume , infi_ice , chym_manning , deflate_level ,              &
