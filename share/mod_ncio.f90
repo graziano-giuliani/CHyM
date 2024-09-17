@@ -1243,7 +1243,7 @@ module mod_ncio
            anno,'0101_',anno,'1231_00_0.75.nc'
         write(log,'(18x,a,a,i4,a,i4,a)')'Opening Era file ERAIN75', &
          'erai_tas_',anno,'0101_',anno,'1231_00_0.75.nc'
-      else if (mchym(15) == 7) then
+      else if (mchym(15) == 7 .or. mchym(15) == 8) then
         dirt="./museo/TEMP/ERA5/"
         write(cfl,'(a,a,a,a,a)') 'tas_',adata(1:4),'_',adata(5:6),'.nc'
         write(log,'(18x,a,a)')'Opening Era file ERA5', cfl
@@ -2190,7 +2190,7 @@ module mod_ncio
         write(log,'(18x,a,a,i4,a)')'Opening Era file ERAIN75', &
         'erainterim_075_',anno,'.nc'
         pfact=1000./3.
-      else if (rdata == 14) then
+      else if (rdata == 14 .or. rdata == 16) then
         dir="./museo/PREC/ERA5/"
         write(cfl,'(a,a,a,a,a)') 'pr_',adata(1:4),'_',adata(5:6),'.nc'
         write(log,'(18x,a,a)')'Opening Era file ERA5', &
