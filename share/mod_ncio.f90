@@ -1292,11 +1292,15 @@ module mod_ncio
           dirt,cfl)
       istatus = nf90_get_att(lunt,tcode,'add_offset', &
              tmp)
-      call chkncstatus(istatus,nf90_noerr,'add_offset',dirt,cfl)
-      offset = tmp
-      istatus = nf90_get_att(lunt,tcode,'scale_factor',tmp)
-      call chkncstatus(istatus,nf90_noerr,'scale factor',dirt,cfl)
-      scalef = tmp
+      if ( istatus /= nf90_noerr ) then
+        offset = tmp
+        istatus = nf90_get_att(lunt,tcode,'scale_factor',tmp)
+        call chkncstatus(istatus,nf90_noerr,'scale factor',dirt,cfl)
+        scalef = tmp
+      else
+        offset = 0.0
+        scalef = 1.0
+      end if
       temp = tmpm * scalef + offset - 273.15
       call erashiftlon(temp,nlon,nlat)
       call erashiftlat(temp,nlon,nlat)
@@ -1764,11 +1768,15 @@ module mod_ncio
 !       print*,"schiatti qui5?"
 
         istatus = nf90_get_att(lun,pcode,'add_offset', tmp)
-        call chkncstatus(istatus,nf90_noerr,'add_offset',dir,cfl)
-        offset = tmp
-        istatus = nf90_get_att(lun,pcode,'scale_factor',tmp)
-        call chkncstatus(istatus,nf90_noerr,'scale factor',dir,cfl)
-        scalef = tmp
+        if ( istatus /= nf90_noerr ) then
+          offset = tmp
+          istatus = nf90_get_att(lun,pcode,'scale_factor',tmp)
+          call chkncstatus(istatus,nf90_noerr,'scale factor',dir,cfl)
+          scalef = tmp
+        else
+          offset = 0.0
+          scalef = 1.0
+        end if
         tmpm = tmpm * scalef + offset
 !       print*,"schiatti qui4?"
 !        print*,maxval(tmpm)
@@ -1839,11 +1847,15 @@ module mod_ncio
 !       print*,'pcode',pcode
 
        istatus = nf90_get_att(lun,pcode,'add_offset',tmp)
-       call chkncstatus(istatus,nf90_noerr,'add_offset',dir,cfl)
-       offset = tmp
-       istatus = nf90_get_att(lun,pcode,'scale_factor',tmp)
-       call chkncstatus(istatus,nf90_noerr,'scale factor',dir,cfl)
-       scalef = tmp
+       if ( istatus /= nf90_noerr ) then
+         offset = tmp
+         istatus = nf90_get_att(lun,pcode,'scale_factor',tmp)
+         call chkncstatus(istatus,nf90_noerr,'scale factor',dir,cfl)
+         scalef = tmp
+       else
+         offset = 0.0
+         scalef = 1.0
+       end if
 !       print*,'offsetscalef',offset,scalef
        raini = raini * scalef + offset
 !       print*,'maxval',maxval(raini)
@@ -2245,10 +2257,14 @@ module mod_ncio
       call chkncstatus(istatus,nf90_noerr,'Error read var tp era',dir,cfl)
       istatus = nf90_get_att(lun,pcode, &
             'scale_factor',scalef)
-      call chkncstatus(istatus,nf90_noerr,'Error find att scale_factor',dir,cfl)
-      istatus = nf90_get_att(lun,pcode,  &
-           'add_offset',offset)
-      call chkncstatus(istatus,nf90_noerr,'Error find att add_offset',dir,cfl)
+      if ( istatus /= nf90_noerr ) then
+        istatus = nf90_get_att(lun,pcode,  &
+             'add_offset',offset)
+        call chkncstatus(istatus,nf90_noerr,'Error find att add_offset',dir,cfl)
+      else
+        offset = 0.0
+        scalef = 1.0
+      end if
       if (ora>=3 .and. rdata /= 14) then
         istart(3) = rec-1 ; icount(3) = 1
         istatus = nf90_get_var(lun,pcode,tmpm(:,:),istart,icount)
@@ -2305,10 +2321,14 @@ module mod_ncio
        call chkncstatus(istatus,nf90_noerr,'Error read var tp era',dir,cfl)
        istatus = nf90_get_att(lun,pcode, &
              'scale_factor',scalef)
-       call chkncstatus(istatus,nf90_noerr,'Error find att scale_factor',dir,cfl)
-       istatus = nf90_get_att(lun,pcode,  &
-            'add_offset',offset)
-       call chkncstatus(istatus,nf90_noerr,'Error find att add_offset',dir,cfl)
+       if ( istatus /= nf90_noerr ) then
+         istatus = nf90_get_att(lun,pcode,  &
+              'add_offset',offset)
+         call chkncstatus(istatus,nf90_noerr,'Error find att add_offset',dir,cfl)
+       else
+         offset = 0.0
+         scalef = 1.0
+       end if
        if (ora>=3 .and. rdata /= 14 ) then
          istart(3) = nrec-1 ; icount(3) = 1
          istatus = nf90_get_var(lun,pcode,tmpm(:,:),istart,icount)
