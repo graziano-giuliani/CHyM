@@ -1264,7 +1264,7 @@ module mod_ncio
     if (mchym(15) == 6) then
       write(cfl,'(a,i4,a,i4,a)') 'erai_tas_', &
        anno,'0101_',anno,'1231_00_0.75.nc'
-    else if (mchym(15) == 7) then
+    else if (mchym(15) == 7 .or. mchym(15) == 8) then
       write(cfl,'(a,a,a,a,a)') 'tas_',adata(1:4),'_',adata(5:6),'.nc'
     end if
     if (cfl(1:len_trim(cfl)).ne.oldcflt(1:len_trim(oldcflt))) then
@@ -1281,6 +1281,8 @@ module mod_ncio
       nrec=(xmese*4+(giorno-1)*4+(ora/6))+1
     else if (mchym(15) == 7) then
       nrec=(giorno-1)*24+(ora)+1
+    else if (mchym(15) == 8) then
+      nrec = giorno
     end if
     if (nrec.eq.0) nrec=1
     if (ifl.eq.1) then
@@ -2252,6 +2254,8 @@ module mod_ncio
       end if
       if (rdata == 14) then
         rec=(giorno-1)*24+(ora)+1
+      else if (rdata == 16 ) then
+        rec = giorno
       else
         rec=(xmese*8+(giorno-1)*8+(ora/3))+1
       end if
@@ -2295,7 +2299,7 @@ module mod_ncio
 !      write(cfl,'(a,i4,a)') 'erainterim_075_',anno,'.nc'
       write(cfl,'(a,i4,a,i4,a)') 'erai_precip_',anno,'0101_',anno,'1231_00_0.75.nc'
     end if
-    if (rdata == 14) then
+    if (rdata == 14 .or. rdata == 16) then
       write(cfl,'(a,a,a,a,a)') 'pr_',adata(1:4),'_',adata(5:6),'.nc'
     end if
     if (cfl(1:len_trim(cfl)).ne.oldcfl(1:len_trim(oldcfl))) then
@@ -2309,6 +2313,8 @@ module mod_ncio
     endif
     if (rdata == 14) then
       nrec=(giorno-1)*24+(ora)+1
+    else if (rdata == 16) then
+      nrec = giorno
     else
       nrec=(xmese*8+(giorno-1)*8+(ora/3))+1
     end if
