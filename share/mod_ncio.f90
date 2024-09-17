@@ -2238,6 +2238,9 @@ module mod_ncio
       if (istatus.ne.nf90_noerr) then
           istatus = nf90_inq_varid(lun,'tp',pcode)
       end if
+      if (istatus.ne.nf90_noerr) then
+          istatus = nf90_inq_varid(lun,'pr',pcode)
+      end if
       call chkncstatus(istatus,nf90_noerr,'rain code',dir,cfl)
       istatus = nf90_inq_varid(lun,'time',itime)
       call chkncstatus(istatus,nf90_noerr,'time',dir,cfl)
