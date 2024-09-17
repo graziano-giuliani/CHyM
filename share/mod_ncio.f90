@@ -2213,11 +2213,17 @@ module mod_ncio
       call chkncstatus(istatus,nf90_noerr,'open',dir,cfl)
       oldcfl=cfl
       istatus = nf90_inq_varid(lun,'latitude',ivarid)
-      call chkncstatus(istatus,nf90_noerr,'Missing latitude variable in file ',dir,cfl)
+      if ( istatus /= nf_noerr ) then
+        istatus = nf90_inq_varid(lun,'lat',ivarid)
+        call chkncstatus(istatus,nf90_noerr,'Missing latitude variable in file ',dir,cfl)
+      end if
       istatus = nf90_get_var(lun,ivarid,glat)
       call chkncstatus(istatus,nf90_noerr,'Error reading lat var in file ',dir,cfl)
       istatus = nf90_inq_varid(lun,'longitude',ivarid)
-      call chkncstatus(istatus,nf90_noerr,'Missing longitude variable in file ',dir,cfl)
+      if ( istatus /= nf_noerr ) then
+        istatus = nf90_inq_varid(lun,'lon',ivarid)
+        call chkncstatus(istatus,nf90_noerr,'Missing longitude variable in file ',dir,cfl)
+      end if
       istatus = nf90_get_var(lun,ivarid,glon)
       call chkncstatus(istatus,nf90_noerr,'Error reading lon var in file ',dir,cfl)
       !
