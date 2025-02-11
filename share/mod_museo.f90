@@ -3111,6 +3111,7 @@ module mod_museo
     else if ( trim(schym(2)) == 'standard' ) then
 !      irec=(xmese*24)+1 
       write (cfl,'(a,i6,a)') trim(schym(16))//'SRF.' , anno*100 + mese , '0100.nc'
+      ! irec = (giorno-1)*24 + ora + 1
       irec = (giorno-1)*8 + (ora/3) + 1
       if (irec.eq.0) irec=1
     end if

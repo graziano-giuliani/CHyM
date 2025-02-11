@@ -22,8 +22,6 @@
   chym_sdate = 2008100100,   !-->Start date of this run in the format YYYYMMDDHH (Integer)
   chym_edate = 2008111101,   !-->End date of this run in the format YYYYMMDDHH (Integer)
   chym_steps = 50,           !-->Specifies the number of time integration steps per hour to be used for the solution of the
-  dsfrq = 1,                 !-->Input dataset frequency. By default data has the below defined frequencies,
-                             |--> but the user may want different one
                              !-->prognostic continuity equation
   chym_tempfl = 1,           !-->            1 means monthly average temperature from global ERA data are used
                              !-->            2 Daily average temperatures as simulated by MM5 meteorological model are used, the data set only covers the Italy and the surrounding zone.
