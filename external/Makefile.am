@@ -16,13 +16,12 @@
 #    along with ICTP CHyM.  If not, see <http://www.gnu.org/licenses/>.
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 include $(CHYM_ROOT)/makeinc
 
 vpath %.F90 $(CHYM_ROOT)/external/mpi-serial
-vpath %.F90 $(CHYM_ROOT)/external/mpi-serial
 vpath %.c $(CHYM_ROOT)/external/mpi-serial
 vpath %.h $(CHYM_ROOT)/external/mpi-serial
-
 
 if CHYM_PARALLEL
 noinst_LIBRARIES =
@@ -41,21 +40,21 @@ mpif.h:
 %.o: %.c
 	$(CC) $(CFLAGS) $(MPEUCFLAGS) -c $<
 
-%.o: %.F90
+%.o: %.f90
 	  $(FC) $(CPPFLAGS) $(FCFLAGS) $(MPEUFCFLAGS) -c $<
 
 %.o: %.F90
-	  $(FC) $(CPPFLAGS) $(SVNDEF) $(FCFLAGS) $(MPEUFCFLAGS) -c $<
+	  $(FC) $(CPPFLAGS) $(GITVER) $(FCFLAGS) $(MPEUFCFLAGS) -c $<
 
 distclean-local:
-	rm -f *.mod mpif.h
+	rm -f *.mod *__genmod.* *opt.yaml *optrpt mpif.h
 
 clean-local:
-	rm -f *.mod
+	rm -f *.mod *__genmod.* *opt.yaml *optrpt
 
 # --------------------------------------------------------------------
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 mpi.o: mpif.h
 fort.o: fort.F90
-mpistub.o: mpistub.F90 
+mpistub.o: mpistub.F90

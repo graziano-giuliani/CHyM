@@ -149,7 +149,8 @@ module mod_time
     implicit none
     integer :: anno , giorno , mese , ora , irec
     intent (in) irec
-    intent (out) anno , giorno , mese , ora
+    intent (inout) :: anno
+    intent (out) giorno , mese , ora
     if ( mod(irec,24)==0 ) then
       call dayfromindex(irec/24,giorno,mese,anno)
       ora = 23
@@ -163,7 +164,8 @@ module mod_time
     implicit none
     integer :: anno , giorno , dindex , mese , minuto , ora
     intent (in) dindex
-    intent (out) minuto , ora , giorno , mese , anno
+    intent (out) minuto , ora , giorno , mese
+    intent (inout) :: anno
     integer :: nqu
     if ( dindex<=1 ) then
       minuto = 0

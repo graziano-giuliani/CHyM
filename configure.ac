@@ -1,31 +1,30 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.63])
-AC_INIT([ICHyM], [1.0.0], [fabio.disante@gmail.com])
+AC_INIT([ICHyM], [1.0.1], [ggiulian@ictp.it])
+
+AC_SUBST([PACKAGE_URL], ["https://github.com/graziano-giuliani/CHyM"])
+
 LT_INIT
+
 AM_INIT_AUTOMAKE([foreign])
+
+AC_CONFIG_MACRO_DIRS([m4])
 
 # Checks for programs.
 
+AM_PROG_AR
 AC_PROG_RANLIB
 AC_PROG_CC
 AC_PROG_FC
 
 AC_LANG([Fortran])
 
-AX_PROG_NF_CONFIG([NC_PREFIX=`nf-config --prefix` && NFAUTO="yes"],
-                  [NC_PREFIX="${NETCDF}" && NFAUTO="no"])
-
-if eval "test x$NFAUTO = xno"; then
-  AX_PROG_NC_CONFIG([NC_PREFIX=`nc-config --prefix` && NCAUTO="yes"],
-                    [NC_PREFIX="${NETCDF}" && NCAUTO="no"])
-fi
-
 AC_ARG_WITH([netcdf],
   AC_HELP_STRING([--with-netcdf],
             [Path to NetCDF installation (default: NETCDF environment)]),
-  [NC_PREFIX="$withval" && NCAUTO="no"], [FAKE="no"]
+  [NC_PREFIX="$withval"; NF_PREFIX="$withval"; NFAUTO="no"; NCAUTO="no"],
+  [FAKE="no"]
 )
 
 PARALLEL="1"
@@ -45,6 +44,16 @@ if eval "test x$NETCDF4_HDF5 = x1"; then
   AC_SUBST(AM_CPPFLAGS)
 fi
 
+NC_INCLUDES=""
+NC_LDFLAGS=""
+NC_LIBS=""
+
+AX_PROG_NF_CONFIG([NF_PREFIX=`nf-config --prefix`; NFAUTO="yes"],
+                  [NF_PREFIX="${NETCDF}"; NFAUTO="no"])
+
+AX_PROG_NC_CONFIG([NC_PREFIX=`nc-config --prefix`; NCAUTO="yes"],
+                  [NC_PREFIX="${NETCDF}"; NCAUTO="no"])
+
 ##old # Checks for libraries.
 ##old # FIXME: Replace `main' with a function in `-lnetcdf':
 ##old AC_CHECK_LIB([netcdf], [-lnetcdf])
@@ -58,14 +67,20 @@ fi
 # Checks for library functions.
 
 if eval "test x$NFAUTO = xyes"; then
-  NC_INCLUDES="`nf-config --fflags`"
-  NC_LDFLAGS=""
-  NC_LIBS="`nf-config --flibs`"
+  if eval "test x$NCAUTO = xyes"; then
+    NC_INCLUDES="`nc-config --cflags` `nf-config --fflags`"
+    #NC_LDFLAGS="-L`nf-config --prefix`/lib -L`nc-config --prefix`/lib"
+    NC_LIBS="`nc-config --libs` `nf-config --flibs`"
+  else
+    NC_INCLUDES="-I$NC_PREFIX/include `nf-config --fflags`"
+    NC_LDFLAGS="-L$NC_PREFIX/lib -L`nc-config --prefix`/lib"
+    NC_LIBS="-L$NC_PREFIX/lib `nf-config --flibs`"
+  fi
 else
   if eval "test x$NCAUTO = xno"; then
-    NC_INCLUDES="-I$NC_PREFIX/include"
-    NC_LDFLAGS="-L$NC_PREFIX/lib"
-    NC_LIBS="-lnetcdf"
+    NC_INCLUDES="-I$NC_PREFIX/include -I$NF_PREFIX/include"
+    NC_LDFLAGS="-L$NC_PREFIX/lib -L$NF_PREFIX/lib"
+    NC_LIBS="-lnetcdff -lnetcdf"
   else
     NCVER=`nc-config --version | cut -d " " -f 2`
     if eval "test x$NCVER = x4.0.1"; then
@@ -74,13 +89,16 @@ else
       # new netcdf library has this
       NC_INCLUDES="-I`nc-config --includedir`"
     fi
-    NC_LDFLAGS=""
+    NC_LDFLAGS="-L`nc-config --prefix`/lib"
     NC_LIBS="`nc-config --libs`"
   fi
 fi
 
 AC_SUBST(NC_PREFIX)
+AC_SUBST(NF_PREFIX)
 AC_SUBST(NC_INCLUDES)
+AC_SUBST(NC_LDFLAGS)
+AC_SUBST(NC_LIBS)
 
 AC_LANG_PUSH([C])
 AC_C_BIGENDIAN
@@ -234,7 +252,7 @@ fi
 if test -z "$COMPILER_INTEL_TRUE"; then
   #FCFLAGS="-O0 -fpe0 -g -check all -traceback -warn all -ftz \
   #         -fimf-arch-consistency=true -fltconsistency -mieee-fp $FCFLAGS"
-  FCFLAGS="-O2 -fp-model fast=2 -ip $FCFLAGS"
+  FCFLAGS="-O2 -fp-model fast=2 $FCFLAGS"
   AC_SUBST(FCFLAGS)
 fi
 if test -z "$COMPILER_IBM_TRUE"; then

@@ -29,8 +29,8 @@ subroutine mpi_sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, &
              recvbuf, recvcount, recvtype, source, recvtag, &
              comm, status, ierror)
   implicit none
-  include 'mpif.h'
 
+  include 'mpif.h'
 
   real(8) , dimension(:) :: sendbuf , recvbuf
   integer :: sendcount , sendtype , dest , sendtag
